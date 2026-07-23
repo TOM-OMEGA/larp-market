@@ -4,69 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>關於 - LARP 二手市集</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --blood: #7a2020; --parchment: #e8dcc4; --iron: #8a7a6a; }
-  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
-  h1,.title { font-family: 'Cinzel', serif; }
-  .amber { color: var(--amber); }
-  .card { background: var(--bg-card); border: 1px solid #2a2018; }
-  .text-iron { color: var(--iron); }
+:root{--ink:#0d0906;--parchment:#f0e6c8;--gold:#c9a84c;--gold-light:#e8c96a;--crimson:#7a1a1a;--crimson-light:#a83232;--cream:#e8d5b7;--dim:#8a7a5a;--border:#3d2e1a}*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{background:var(--ink);color:var(--cream);font-family:EB Garamond,Georgia,serif;min-height:100vh}body::before{content:;position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27300%27 height=%27300%27%3E%3Cfilter id=%27n%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.75%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27300%27 height=%27300%27 filter=%27url(%23n)%27 opacity=%270.035%27/%3E%3C/svg%3E");pointer-events:none;z-index:999}@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@keyframes fi{from{opacity:0}to{opacity:1}}.afu{animation:fu .6s ease-out both}.n{background:linear-gradient(180deg,#0a0604,transparent);border-bottom:1px solid var(--border);padding:1.2rem 2rem;position:relative}.n::after{content:;position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3}.ni{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}.nl{font-family:Cinzel,serif;font-size:1.1rem;font-weight:700;color:var(--gold);text-decoration:none;letter-spacing:.12em;text-shadow:0 0 15px rgba(201,168,76,.3)}.links{display:flex;gap:2.5rem;list-style:none}.links a{font-family:Cinzel,serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color .3s,text-shadow .3s}.links a:hover{color:var(--gold);text-shadow:0 0 10px rgba(201,168,76,.4)}.sd{display:flex;align-items:center;gap:1.5rem;margin:2rem 0 1.5rem}.dl{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border) 30%,var(--border) 70%,transparent)}.dt{font-family:Cinzel,serif;font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;color:var(--dim);white-space:nowrap}.do{color:var(--gold);font-size:.7rem;opacity:.6}.card{background:linear-gradient(145deg,#1a1008,#0f0a06);border:1px solid var(--border);position:relative;overflow:hidden}.card::before{content:;position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}.cp{padding:1.8rem}.item-title{font-family:Cinzel,serif;font-size:1.6rem;font-weight:700;color:var(--gold);letter-spacing:.08em;text-shadow:0 0 15px rgba(201,168,76,.2)}.price-tag{font-family:Cinzel,serif;font-size:2rem;font-weight:700;color:var(--gold);text-shadow:0 0 15px rgba(201,168,76,.3);border-left:3px solid var(--gold);padding-left:1rem}.tag{display:inline-block;font-family:Cinzel,serif;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;background:var(--crimson);color:var(--parchment);padding:2px 8px;margin-right:.4rem}.tag.overseas{background:#1a0d2e;color:#c9a0f0}.tag.taiwan{background:#0d2e1a;color:#90c9a0}.tag.cat{background:var(--ink);color:var(--dim);border:1px solid var(--border)}.overseas-note{background:rgba(26,13,46,.6);border-left:3px solid #6030c0;padding:1rem 1.2rem;margin:1.2rem 0;font-style:italic;color:#c9a0f0;font-size:.95rem}.meta{font-family:EB Garamond,serif;font-size:.9rem;color:var(--dim);margin-top:.8rem;font-style:italic;border-top:1px solid var(--border);padding-top:.8rem}.status{font-family:Cinzel,serif;font-size:.8rem;letter-spacing:.1em;margin-top:.5rem}.status.y{color:#e8c96a}.status.b{color:#6a9fd4}.status.g{color:#90c9a0}.btn-p{display:inline-block;font-family:Cinzel,serif;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;background:linear-gradient(135deg,var(--crimson),var(--crimson-light));color:var(--parchment);border:1px solid var(--crimson-light);padding:1rem 2.5rem;text-decoration:none;transition:background .3s,box-shadow .3s,transform .2s}.btn-p:hover{background:linear-gradient(135deg,var(--crimson-light),var(--crimson));box-shadow:0 0 25px rgba(122,26,26,.5);transform:translateY(-2px)}.btn-o{display:inline-block;font-family:Cinzel,serif;font-size:.75rem;letter-spacing:.25em;text-transform:uppercase;background:transparent;color:var(--gold);border:1px solid var(--border);padding:1rem 2.5rem;text-decoration:none;transition:border-color .3s,background .3s,box-shadow .3s,transform .2s}.btn-o:hover{border-color:var(--gold);background:rgba(201,168,76,.05);box-shadow:0 0 15px rgba(201,168,76,.1);transform:translateY(-2px)}.flash{padding:.8rem 1.2rem;border-left:3px solid var(--gold);background:rgba(201,168,76,.08);color:var(--gold);font-family:EB Garamond,serif;font-style:italic;margin-bottom:1.5rem;animation:fu .4s ease-out}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.2rem}.ic{background:linear-gradient(145deg,#1a1008,#0f0a06);border:1px solid var(--border);text-decoration:none;display:block;transition:transform .35s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .3s;position:relative;overflow:hidden}.ic::before{content:;position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:0;transition:opacity .3s}.ic:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(201,168,76,.1)}.ic:hover::before{opacity:1}.iw{width:100%;height:160px;overflow:hidden;background:#080604}.iw img{width:100%;height:100%;object-fit:cover;transition:transform .5s,filter .3s;filter:sepia(20%) saturate(90%)}.ic:hover .iw img{transform:scale(1.05);filter:sepia(0%) saturate(100%)}.ip{width:100%;height:160px;background:#080604;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--border);font-family:Cinzel,serif}.ib{padding:.9rem}.it{font-family:Cinzel,serif;font-size:.8rem;font-weight:600;color:var(--cream);letter-spacing:.06em;margin-bottom:.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ip2{font-family:Cinzel,serif;font-size:1.1rem;font-weight:700;color:var(--gold);letter-spacing:.05em;text-shadow:0 0 10px rgba(201,168,76,.2)}.empty{text-align:center;padding:3.5rem;color:var(--dim);border:1px dashed var(--border);font-family:EB Garamond,serif;font-style:italic;font-size:1.1rem;animation:fi .6s ease-out}.ft{margin-top:5rem;padding:2.5rem 2rem;border-top:1px solid var(--border);text-align:center;position:relative}.ft::before{content:;position:absolute;top:0;left:50%;transform:translateX(-50%);width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.4}.ft p{font-family:EB Garamond,serif;font-size:.85rem;color:var(--dim);font-style:italic;letter-spacing:.05em}.fb{display:flex;gap:1rem;flex-wrap:wrap}input,select,textarea{background:#0a0604;border:1px solid var(--border);color:var(--cream);padding:.6rem 1rem;font-family:EB Garamond,serif;font-size:1rem;outline:none;transition:border-color .3s;width:100%}input:focus,select:focus,textarea:focus{border-color:var(--gold)}input::placeholder,textarea::placeholder{color:var(--dim);font-style:italic}label{display:block;margin-bottom:.3rem;font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dim)}.field{margin-bottom:1.2rem}hr{border:none;border-top:1px solid var(--border);margin:1.5rem 0}.checkbox{display:flex;align-items:center;gap:.5rem;cursor:pointer}.checkbox input{width:auto}.checkbox span{font-family:EB Garamond,serif;color:var(--dim);font-size:.95rem}.center{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:2rem}.login-box{background:linear-gradient(145deg,#1a1008,#0f0a06);border:1px solid var(--border);padding:2.5rem;width:100%;max-width:420px;position:relative}.login-box::before{content:;position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}.wish-card{background:linear-gradient(145deg,#1a1008,#0f0a06);border:1px solid var(--border);padding:.8rem 1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;border-left:2px solid var(--crimson);transition:border-color .3s,background .3s}.wish-card:hover{border-left-color:var(--gold);background:linear-gradient(145deg,#201508,#140c06)}.wn{font-family:EB Garamond,serif;font-size:1rem;color:var(--cream);font-style:italic}.wp{font-family:Cinzel,serif;font-size:.85rem;color:var(--dim);letter-spacing:.05em}@media(max-width:640px){.links{gap:1.2rem}.links a{font-size:.65rem;letter-spacing:.1em}.grid{grid-template-columns:repeat(2,1fr);gap:.8rem}}::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--ink)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 </style>
 </head>
-<body class="min-h-screen">
-<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
-  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
-  <div class="flex gap-5 text-sm text-iron">
-    <a href="/market" class="hover:text-amber">市集</a>
-    <a href="/wishlist" class="hover:text-amber">許願區</a>
-    <a href="/list" class="hover:text-amber">上架</a>
-    <a href="/about" class="text-amber">關於</a>
+<body>
+<nav class="n">
+  <div class="ni">
+    <a href="/" class="nl">&#9886; LARP 二手市集</a>
+    <ul class="links">
+      <li><a href="/market" class="links a" style="">市集</a></li>
+      <li><a href="/wishlist" class="links a" style="">許願區</a></li>
+      <li><a href="/list" class="links a" style="">上架</a></li>
+      <li><a href="/about" class="links a" style="color:var(--gold)">關於</a></li>
+    </ul>
   </div>
 </nav>
 
-<main class="max-w-2xl mx-auto p-6">
-  <h1 class="title text-3xl font-bold amber mb-8 text-center">關於市集</h1>
-
-  <div class="space-y-6">
-    <div class="card rounded-lg p-6">
-      <h2 class="title text-lg font-bold amber mb-3">🏰 我們是誰</h2>
-      <p class="text-iron leading-relaxed">LARP 二手市集是專為台灣 LARP 玩家成立的道具交易平台。我們不做性別/團體限定，大眾化歡迎所有玩家加入。</p>
-    </div>
-
-    <div class="card rounded-lg p-6">
-      <h2 class="title text-lg font-bold amber mb-3">💰 交易流程</h2>
-      <ol class="space-y-2 text-iron">
-        <li><span class="text-amber font-bold">①</span> 買家下訂金（50%），留在平台帳戶</li>
-        <li><span class="text-amber font-bold">②</span> 賣家寄出，湯姆轉一半費用給賣家</li>
-        <li><span class="text-amber font-bold">③</span> 湯姆確認收到沒問題，轉尾款</li>
-        <li><span class="text-amber font-bold">④</span> 每週三林森公園夜貓聚會面交</li>
-      </ol>
-      <p class="text-iron text-sm mt-3">平台收取售價 10% 作為手續費。</p>
-    </div>
-
-    <div class="card rounded-lg p-6">
-      <h2 class="title text-lg font-bold amber mb-3">🗺️ 面交地點</h2>
-      <p class="text-iron">每週三晚上，林森公園（台北市中山區）。夜貓聚會固定舉行，歡迎帶武器來交流。</p>
-    </div>
-
-    <div class="card rounded-lg p-6">
-      <h2 class="title text-lg font-bold amber mb-3">🌏 海外商品</h2>
-      <p class="text-iron leading-relaxed">我們也轉載大陸/日本等海外的二手盔甲。標示「海外」的商品預計等待 2-4 週，屆時會發送通知。寄丟了可向原平台申訴退款。</p>
-    </div>
-
-    <div class="card rounded-lg p-6">
-      <h2 class="title text-lg font-bold amber mb-3">⚖️ 免責聲明</h2>
-      <ul class="space-y-2 text-iron text-sm">
-        <li>• 商品資訊由賣家提供，平台僅提供上架空間</li>
-        <li>• 寄送損壞為物流責任，平台協助聯繫，不直接賠償</li>
-        <li>• 上架請附真實姓名電話以便聯繫</li>
-        <li>• 所有交易爭議由買賣雙方自行負責</li>
-      </ul>
-    </div>
+<main style="max-width:700px;margin:0 auto;padding:0 2rem 3rem;">
+  <div class="sd afu"><div class="dl"></div><span class="dt">關於</span><span class="do">&#10022;</span><span class="dt">About</span><div class="dl"></div></div>
+  <div class="card cp afu" style="margin-bottom:1.2rem;">
+    <div style="font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;">// 我們是誰</div>
+    <p style="color:var(--cream);line-height:1.9;">LARP 二手市集是專為台灣 LARP 玩家成立的道具交易平台。大眾化，不限定團體，歡迎所有玩家加入。</p>
+  </div>
+  <div class="card cp afu" style="margin-bottom:1.2rem;">
+    <div style="font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;">// 交易流程</div>
+    <p style="color:var(--cream);line-height:2.2;font-family:EB Garamond,serif;">
+      <span style="color:var(--gold);font-family:Cinzel,serif;font-size:.9rem;">&#9312;</span> 買家下訂金（50%），留在平台帳戶<br>
+      <span style="color:var(--gold);font-family:Cinzel,serif;font-size:.9rem;">&#9313;</span> 賣家寄出，湯姆轉一半費用給賣家<br>
+      <span style="color:var(--gold);font-family:Cinzel,serif;font-size:.9rem;">&#9314;</span> 湯姆確認收到沒問題，轉尾款<br>
+      <span style="color:var(--gold);font-family:Cinzel,serif;font-size:.9rem;">&#9315;</span> 每週三林森公園夜貓聚會面交
+    </p>
+    <p style="color:var(--dim);font-family:EB Garamond,serif;font-size:.9rem;margin-top:.8rem;font-style:italic;">平台收取售價 10% 作為手續費。</p>
+  </div>
+  <div class="card cp afu" style="margin-bottom:1.2rem;">
+    <div style="font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;">// 面交地點</div>
+    <p style="color:var(--cream);line-height:1.9;">每週三晚上，林森公園（台北市中山區）。夜貓聚會固定舉行，歡迎帶武器來交流。</p>
+  </div>
+  <div class="card cp afu" style="margin-bottom:1.2rem;">
+    <div style="font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;">// 海外商品</div>
+    <p style="color:var(--cream);line-height:1.9;">我們也轉載大陸/日本等海外的二手盔甲。標示「海外」的商品預計等待 2–4 週，屆時會發送通知。寄丟了可向原平台申訴退款。</p>
+  </div>
+  <div class="card cp afu" style="margin-bottom:1.2rem;">
+    <div style="font-family:Cinzel,serif;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;">// 免責聲明</div>
+    <p style="color:var(--cream);line-height:2.1;">
+      &#8226; 商品資訊由賣家提供，平台僅提供上架空間<br>
+      &#8226; 寄送損壞為物流責任，平台協助聯繫，不直接賠償<br>
+      &#8226; 上架請附真實姓名電話以便聯繫<br>
+      &#8226; 所有交易爭議由買賣雙方自行負責
+    </p>
   </div>
 </main>
+<footer class="ft"><p>LARP 二手市集 — 台灣 LARP 玩家交易平台</p></footer>
 </body>
 </html>

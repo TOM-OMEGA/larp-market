@@ -6,10 +6,15 @@
 <title>管理後台 - LARP 二手市集</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com
 <style>
-  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --parchment: #e8dcc4; --iron: #8a7a6a; }
-  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  :root {
+    --bg: #0f1114; --bg-card: #16191f; --border: #2a2f38;
+    --olive: #4a5c3e; --olive-light: #6b7d58; --khaki: #c9b48a;
+    --steel: #5a6470; --text: #d4cfc4; --text-dim: #7a746a;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans TC', sans-serif; }
   h1,.title { font-family: 'Cinzel', serif; }
   .amber { color: var(--amber); }
   .btn-primary { background: var(--amber); color: #000; }
@@ -18,6 +23,12 @@
   .text-iron { color: var(--iron); }
   input { background: #0d0b08; border: 1px solid #3a2a1a; color: var(--parchment); border-radius: 6px; padding: 8px 12px; width: 100%; }
   input:focus { outline: none; border-color: var(--amber); }
+  .font-military { font-family: 'Oswald', sans-serif; letter-spacing: 0.05em; }
+  .border-left-accent { border-left: 3px solid var(--olive); }
+  .card { background: var(--bg-card); border: 1px solid var(--border); }
+  .btn-primary { background: var(--olive); color: #fff; border: 1px solid var(--olive-light); }
+  input, select { background: #0a0c0f; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; }
+  input:focus { outline: none; border-color: var(--olive); }
 </style>
 </head>
 <body class="min-h-screen">

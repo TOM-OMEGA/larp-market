@@ -4,110 +4,564 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LARP 二手市集</title>
-<script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --blood: #7a2020; --parchment: #e8dcc4; --iron: #8a7a6a; }
-  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
-  h1,h2,.title { font-family: 'Cinzel', serif; }
-  .amber { color: var(--amber); }
-  .blood { background: var(--blood); }
-  .btn-primary { background: var(--amber); color: #000; }
-  .btn-primary:hover { background: #e09520; }
-  .card { background: var(--bg-card); border: 1px solid #2a2018; }
-  .text-iron { color: var(--iron); }
+  :root {
+    --ink:      #0d0906;
+    --parchment: #f0e6c8;
+    --gold:     #c9a84c;
+    --gold-light: #e8c96a;
+    --crimson:  #7a1a1a;
+    --crimson-light: #a83232;
+    --ink-light: #2a1a0e;
+    --cream:    #e8d5b7;
+    --dim:      #8a7a5a;
+    --border:   #3d2e1a;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--ink);
+    color: var(--cream);
+    font-family: 'EB Garamond', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  /* ─── TYPOGRAPHY ─── */
+  .font-title {
+    font-family: 'Cinzel Decorative', 'Cinzel', serif;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(201,168,76,0.25);
+  }
+  .font-subtitle {
+    font-family: 'Cinzel', serif;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--dim);
+    font-size: 0.7rem;
+  }
+  .font-heading {
+    font-family: 'Cinzel', serif;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  /* ─── ENTRANCE ANIMATIONS ─── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { text-shadow: 0 0 10px rgba(201,168,76,0.2); }
+    50%       { text-shadow: 0 0 25px rgba(201,168,76,0.5); }
+  }
+
+  .anim-fade-up { animation: fade-up 0.6s ease-out both; }
+  .anim-delay-1 { animation-delay: 0.1s; }
+  .anim-delay-2 { animation-delay: 0.2s; }
+  .anim-delay-3 { animation-delay: 0.3s; }
+  .anim-delay-4 { animation-delay: 0.4s; }
+  .anim-delay-5 { animation-delay: 0.5s; }
+
+  /* ─── NAV ─── */
+  .nav {
+    background: linear-gradient(180deg, #0a0604 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 1.2rem 2rem;
+    position: relative;
+  }
+  .nav::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.3;
+  }
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    text-decoration: none;
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 15px rgba(201,168,76,0.3);
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dim);
+    text-decoration: none;
+    transition: color 0.3s, text-shadow 0.3s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; left: 50%; right: 50%;
+    height: 1px;
+    background: var(--gold);
+    transition: left 0.3s, right 0.3s;
+  }
+  .nav-links a:hover {
+    color: var(--gold);
+    text-shadow: 0 0 10px rgba(201,168,76,0.4);
+  }
+  .nav-links a:hover::after { left: 0; right: 0; }
+
+  /* ─── HERO ─── */
+  .hero {
+    text-align: center;
+    padding: 5rem 2rem 3rem;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%,-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse, rgba(122,26,26,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-ornament {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .ornament-line {
+    width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .ornament-diamond {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px rgba(201,168,76,0.5);
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: 0.5rem;
+    animation: fade-up 0.8s ease-out both;
+  }
+  .hero p {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+    animation: fade-up 0.8s ease-out 0.2s both;
+  }
+
+  /* ─── SECTION DIVIDER ─── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin: 3rem 0 2rem;
+  }
+  .section-divider .div-line {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border) 30%, var(--border) 70%, transparent);
+  }
+  .section-divider .div-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .section-divider .div-ornament {
+    color: var(--gold);
+    font-size: 0.7rem;
+    opacity: 0.6;
+  }
+
+  /* ─── CARDS GRID ─── */
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.2rem;
+  }
+  .item-card {
+    background: linear-gradient(145deg, #1a1008 0%, #0f0a06 100%);
+    border: 1px solid var(--border);
+    text-decoration: none;
+    display: block;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .item-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .item-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--gold);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.1);
+  }
+  .item-card:hover::before { opacity: 1; }
+  .item-img-wrap {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    background: #080604;
+    position: relative;
+  }
+  .item-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, filter 0.3s;
+    filter: sepia(20%) saturate(90%);
+  }
+  .item-card:hover .item-img-wrap img {
+    transform: scale(1.05);
+    filter: sepia(0%) saturate(100%);
+  }
+  .item-img-placeholder {
+    width: 100%; height: 160px;
+    background: #080604;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--border);
+    font-family: 'Cinzel', serif;
+  }
+  .item-card-body {
+    padding: 0.9rem;
+  }
+  .item-card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--cream);
+    letter-spacing: 0.06em;
+    margin-bottom: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .item-card-price {
+    font-family: 'Cinzel', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 10px rgba(201,168,76,0.2);
+  }
+  .item-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    background: var(--crimson);
+    color: var(--parchment);
+    padding: 1px 6px;
+    margin-top: 0.3rem;
+  }
+  .item-tag.overseas { background: #1a0d2e; color: #c9a0f0; }
+
+  /* ─── WISHLIST SECTION ─── */
+  .wish-card {
+    background: linear-gradient(145deg, #1a1008 0%, #0f0a06 100%);
+    border: 1px solid var(--border);
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+    border-left: 2px solid var(--crimson);
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .wish-card:hover {
+    border-left-color: var(--gold);
+    background: linear-gradient(145deg, #201508 0%, #140c06 100%);
+  }
+  .wish-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 1rem;
+    color: var(--cream);
+    font-style: italic;
+  }
+  .wish-price {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    color: var(--dim);
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── BUTTONS ─── */
+  .btn-primary {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson-light) 100%);
+    color: var(--parchment);
+    border: 1px solid var(--crimson-light);
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+    background-size: 200% 100%;
+    transition: background-position 0.4s;
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--crimson-light) 0%, var(--crimson) 100%);
+    box-shadow: 0 0 20px rgba(122,26,26,0.4);
+    transform: translateY(-1px);
+  }
+  .btn-primary:hover::before { background-position: -200% center; }
+
+  .btn-outline {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 0.9rem 2rem;
+    text-decoration: none;
+    text-align: center;
+    transition: border-color 0.3s, background 0.3s, box-shadow 0.3s, transform 0.2s;
+  }
+  .btn-outline:hover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.05);
+    box-shadow: 0 0 15px rgba(201,168,76,0.1);
+    transform: translateY(-1px);
+  }
+
+  /* ─── FLASH MESSAGES ─── */
+  .flash {
+    padding: 0.8rem 1.2rem;
+    border-left: 3px solid var(--gold);
+    background: rgba(201,168,76,0.08);
+    color: var(--gold);
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    animation: fade-up 0.4s ease-out;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    margin-top: 5rem;
+    padding: 2.5rem 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    position: relative;
+  }
+  .footer::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+  .footer p {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.85rem;
+    color: var(--dim);
+    font-style: italic;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── ACTION GRID ─── */
+  .action-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 640px) {
+    .nav-links { gap: 1.2rem; }
+    .nav-links a { font-size: 0.65rem; letter-spacing: 0.1em; }
+    .hero { padding: 3rem 1.5rem 2rem; }
+    .items-grid { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--dim); }
 </style>
 </head>
-<body class="min-h-screen">
-<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
-  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
-  <div class="flex gap-5 text-sm text-iron">
-    <a href="/market" class="hover:text-amber">市集</a>
-    <a href="/wishlist" class="hover:text-amber">許願區</a>
-    <a href="/list" class="hover:text-amber">上架</a>
-    <a href="/about" class="text-amber">關於</a>
+<body>
+
+<!-- NAV -->
+<nav class="nav anim-fade-up">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">⚔ LARP 二手市集</a>
+    <ul class="nav-links">
+      <li><a href="/market">市集</a></li>
+      <li><a href="/wishlist">許願區</a></li>
+      <li><a href="/list">上架</a></li>
+      <li><a href="/about" style="color: var(--gold);">關於</a></li>
+    </ul>
   </div>
 </nav>
 
-<main class="max-w-3xl mx-auto p-6">
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-ornament anim-fade-up">
+    <div class="ornament-line"></div>
+    <div class="ornament-diamond"></div>
+    <div class="ornament-line"></div>
+  </div>
+  <h1 class="font-title anim-delay-1">LARP 二手市集</h1>
+  <p class="anim-delay-2">中古世紀魔法道具的交易殿堂</p>
+</section>
+
+<!-- MAIN -->
+<main style="max-width: 1100px; margin: 0 auto; padding: 0 2rem 3rem;">
+
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% for category, msg in messages %}
-  <div class="mb-6 px-4 py-3 rounded bg-green-900/60 border border-green-800 text-green-200">
-    {{ msg }}
-  </div>
+  <div class="flash">{{ msg }}</div>
   {% endfor %}
   {% endwith %}
 
-  <div class="card rounded-lg overflow-hidden mb-6">
-    <div class="bg-[#2a1a10] px-6 py-4 border-b border-[#2a2018]">
-      <h1 class="title text-2xl font-bold amber">最新上架</h1>
-    </div>
-    {% if items %}
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
-      {% for item in items %}
-      <a href="/item/{{ item.id }}" class="card rounded-lg overflow-hidden hover:ring-2 hover:ring-amber/50 block">
-        {% if item.image_path %}
-        <img src="{{ item.image_path }}" class="w-full h-40 object-cover">
-        {% else %}
-        <div class="w-full h-40 bg-[#0d0b08] flex items-center justify-center text-4xl">⚔</div>
+  <!-- LATEST ITEMS -->
+  <div class="section-divider anim-fade-up anim-delay-1">
+    <div class="div-line"></div>
+    <span class="div-title">最新上架</span>
+    <span class="div-ornament">✦</span>
+    <span class="div-title">Latest</span>
+    <div class="div-line"></div>
+  </div>
+
+  {% if items %}
+  <div class="items-grid">
+    {% for item in items %}
+    <a href="/item/{{ item.id }}" class="item-card anim-fade-up" style="animation-delay: {{ loop.index0 * 0.05 + 0.2 }}s">
+      {% if item.image_path %}
+      <div class="item-img-wrap">
+        <img src="{{ item.image_path }}" alt="{{ item.title }}">
+      </div>
+      {% else %}
+      <div class="item-img-placeholder">⚔</div>
+      {% endif %}
+      <div class="item-card-body">
+        <div class="item-card-title">{{ item.title }}</div>
+        <div class="item-card-price">${{ item.price }}</div>
+        {% if item.is_overseas %}
+        <span class="item-tag overseas">海外</span>
         {% endif %}
-        <div class="p-3">
-          <div class="title text-sm font-bold truncate">{{ item.title }}</div>
-          <div class="amber text-lg font-bold">${{ item.price }}</div>
-          {% if item.is_overseas %}
-          <span class="text-xs blood px-2 py-0.5 rounded text-red-200">海外</span>
-          {% endif %}
-        </div>
-      </a>
-      {% endfor %}
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div style="text-align:center; padding: 3rem; color: var(--dim); font-family: 'EB Garamond', serif; font-style: italic; border: 1px dashed var(--border); animation: fade-in 0.6s ease-out 0.3s both;">
+    暂无上架物品
+  </div>
+  {% endif %}
+
+  <!-- WISHLIST -->
+  <div class="section-divider anim-fade-up anim-delay-3">
+    <div class="div-line"></div>
+    <span class="div-title">許願區</span>
+    <span class="div-ornament">✦</span>
+    <span class="div-title">Wishlist</span>
+    <div class="div-line"></div>
+  </div>
+
+  <div style="margin-bottom: 1.5rem;">
+    {% if wishes %}
+    {% for w in wishes[:3] %}
+    <div class="wish-card anim-fade-up" style="animation-delay: {{ loop.index0 * 0.1 + 0.4 }}s">
+      <span class="wish-name">{{ w.title or w.item_name }}</span>
+      {% if w.max_price %}
+      <span class="wish-price">~${{ w.max_price }}</span>
+      {% endif %}
     </div>
-    <div class="text-center p-4">
-      <a href="/market" class="text-iron hover:text-amber text-sm">看全部 →</a>
-    </div>
+    {% endfor %}
     {% else %}
-    <div class="p-8 text-center text-iron">
-      <div class="text-4xl mb-3">🗡️</div>
-      <p>還沒有上架商品</p>
-      <a href="/list" class="btn-primary inline-block mt-3 px-4 py-2 rounded">來上架第一個</a>
+    <div style="color: var(--dim); font-family: 'EB Garamond', serif; font-style: italic; padding: 1.5rem 0; text-align: center; animation: fade-in 0.6s ease-out 0.4s both;">
+      尚無許願
     </div>
     {% endif %}
   </div>
 
-  <div class="card rounded-lg overflow-hidden">
-    <div class="bg-[#2a1a10] px-6 py-4 border-b border-[#2a2018]">
-      <h2 class="title text-xl font-bold amber">許願區</h2>
-    </div>
-    {% if wishes %}
-    <div class="divide-y divide-[#2a2018]">
-      {% for wish in wishes %}
-      <div class="p-4 flex justify-between items-center">
-        <div>
-          <div class="font-bold">{{ wish.title }}</div>
-          {% if wish.description %}
-          <div class="text-sm text-iron">{{ wish.description }}</div>
-          {% endif %}
-          {% if wish.max_price %}
-          <div class="text-sm amber mt-1">願付至 ${{ wish.max_price }}</div>
-          {% endif %}
-        </div>
-        <div class="text-xs text-iron">{{ wish.created_at[:10] }}</div>
-      </div>
-      {% endfor %}
-    </div>
-    {% else %}
-    <div class="p-8 text-center text-iron">
-      <p>沒有人許願</p>
-    </div>
-    {% endif %}
-    <div class="p-4 text-center border-t border-[#2a2018]">
-      <a href="/wishlist" class="text-iron hover:text-amber text-sm">看全部許願 →</a>
-    </div>
+  <div style="display: flex; gap: 1rem;" class="action-grid">
+    <a href="/list" class="btn-primary" style="animation: fade-up 0.6s ease-out 0.5s both;">+ 上架物品</a>
+    <a href="/wish" class="btn-outline" style="animation: fade-up 0.6s ease-out 0.55s both;">+ 許願物品</a>
   </div>
+
 </main>
 
-<footer class="text-center text-iron text-xs py-8 border-t border-[#2a2018] mt-8">
-  每週三林森公園夜貓聚會面交 · 交易安全有保障
+<!-- FOOTER -->
+<footer class="footer">
+  <p>LARP 二手市集 — 台灣 LARP 玩家交易平台</p>
 </footer>
+
 </body>
 </html>
