@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LARP 二手市集</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --blood: #7a2020; --parchment: #e8dcc4; --iron: #8a7a6a; }
+  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  h1,h2,.title { font-family: 'Cinzel', serif; }
+  .amber { color: var(--amber); }
+  .blood { background: var(--blood); }
+  .btn-primary { background: var(--amber); color: #000; }
+  .btn-primary:hover { background: #e09520; }
+  .card { background: var(--bg-card); border: 1px solid #2a2018; }
+  .text-iron { color: var(--iron); }
+</style>
+</head>
+<body class="min-h-screen">
+<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
+  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
+  <div class="flex gap-5 text-sm text-iron">
+    <a href="/market" class="hover:text-amber">市集</a>
+    <a href="/wishlist" class="hover:text-amber">許願區</a>
+    <a href="/list" class="hover:text-amber">上架</a>
+    <a href="/about" class="text-amber">關於</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto p-6">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, msg in messages %}
+  <div class="mb-6 px-4 py-3 rounded bg-green-900/60 border border-green-800 text-green-200">
+    {{ msg }}
+  </div>
+  {% endfor %}
+  {% endwith %}
+
+  <div class="card rounded-lg overflow-hidden mb-6">
+    <div class="bg-[#2a1a10] px-6 py-4 border-b border-[#2a2018]">
+      <h1 class="title text-2xl font-bold amber">最新上架</h1>
+    </div>
+    {% if items %}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 p-4">
+      {% for item in items %}
+      <a href="/item/{{ item.id }}" class="card rounded-lg overflow-hidden hover:ring-2 hover:ring-amber/50 block">
+        {% if item.image_path %}
+        <img src="{{ item.image_path }}" class="w-full h-40 object-cover">
+        {% else %}
+        <div class="w-full h-40 bg-[#0d0b08] flex items-center justify-center text-4xl">⚔</div>
+        {% endif %}
+        <div class="p-3">
+          <div class="title text-sm font-bold truncate">{{ item.title }}</div>
+          <div class="amber text-lg font-bold">${{ item.price }}</div>
+          {% if item.is_overseas %}
+          <span class="text-xs blood px-2 py-0.5 rounded text-red-200">海外</span>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    <div class="text-center p-4">
+      <a href="/market" class="text-iron hover:text-amber text-sm">看全部 →</a>
+    </div>
+    {% else %}
+    <div class="p-8 text-center text-iron">
+      <div class="text-4xl mb-3">🗡️</div>
+      <p>還沒有上架商品</p>
+      <a href="/list" class="btn-primary inline-block mt-3 px-4 py-2 rounded">來上架第一個</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card rounded-lg overflow-hidden">
+    <div class="bg-[#2a1a10] px-6 py-4 border-b border-[#2a2018]">
+      <h2 class="title text-xl font-bold amber">許願區</h2>
+    </div>
+    {% if wishes %}
+    <div class="divide-y divide-[#2a2018]">
+      {% for wish in wishes %}
+      <div class="p-4 flex justify-between items-center">
+        <div>
+          <div class="font-bold">{{ wish.title }}</div>
+          {% if wish.description %}
+          <div class="text-sm text-iron">{{ wish.description }}</div>
+          {% endif %}
+          {% if wish.max_price %}
+          <div class="text-sm amber mt-1">願付至 ${{ wish.max_price }}</div>
+          {% endif %}
+        </div>
+        <div class="text-xs text-iron">{{ wish.created_at[:10] }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="p-8 text-center text-iron">
+      <p>沒有人許願</p>
+    </div>
+    {% endif %}
+    <div class="p-4 text-center border-t border-[#2a2018]">
+      <a href="/wishlist" class="text-iron hover:text-amber text-sm">看全部許願 →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center text-iron text-xs py-8 border-t border-[#2a2018] mt-8">
+  每週三林森公園夜貓聚會面交 · 交易安全有保障
+</footer>
+</body>
+</html>

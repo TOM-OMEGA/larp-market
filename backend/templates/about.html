@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>關於 - LARP 二手市集</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --blood: #7a2020; --parchment: #e8dcc4; --iron: #8a7a6a; }
+  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  h1,.title { font-family: 'Cinzel', serif; }
+  .amber { color: var(--amber); }
+  .card { background: var(--bg-card); border: 1px solid #2a2018; }
+  .text-iron { color: var(--iron); }
+</style>
+</head>
+<body class="min-h-screen">
+<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
+  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
+  <div class="flex gap-5 text-sm text-iron">
+    <a href="/market" class="hover:text-amber">市集</a>
+    <a href="/wishlist" class="hover:text-amber">許願區</a>
+    <a href="/list" class="hover:text-amber">上架</a>
+    <a href="/about" class="text-amber">關於</a>
+  </div>
+</nav>
+
+<main class="max-w-2xl mx-auto p-6">
+  <h1 class="title text-3xl font-bold amber mb-8 text-center">關於市集</h1>
+
+  <div class="space-y-6">
+    <div class="card rounded-lg p-6">
+      <h2 class="title text-lg font-bold amber mb-3">🏰 我們是誰</h2>
+      <p class="text-iron leading-relaxed">LARP 二手市集是專為台灣 LARP 玩家成立的道具交易平台。我們不做性別/團體限定，大眾化歡迎所有玩家加入。</p>
+    </div>
+
+    <div class="card rounded-lg p-6">
+      <h2 class="title text-lg font-bold amber mb-3">💰 交易流程</h2>
+      <ol class="space-y-2 text-iron">
+        <li><span class="text-amber font-bold">①</span> 買家下訂金（50%），留在平台帳戶</li>
+        <li><span class="text-amber font-bold">②</span> 賣家寄出，湯姆轉一半費用給賣家</li>
+        <li><span class="text-amber font-bold">③</span> 湯姆確認收到沒問題，轉尾款</li>
+        <li><span class="text-amber font-bold">④</span> 每週三林森公園夜貓聚會面交</li>
+      </ol>
+      <p class="text-iron text-sm mt-3">平台收取售價 10% 作為手續費。</p>
+    </div>
+
+    <div class="card rounded-lg p-6">
+      <h2 class="title text-lg font-bold amber mb-3">🗺️ 面交地點</h2>
+      <p class="text-iron">每週三晚上，林森公園（台北市中山區）。夜貓聚會固定舉行，歡迎帶武器來交流。</p>
+    </div>
+
+    <div class="card rounded-lg p-6">
+      <h2 class="title text-lg font-bold amber mb-3">🌏 海外商品</h2>
+      <p class="text-iron leading-relaxed">我們也轉載大陸/日本等海外的二手盔甲。標示「海外」的商品預計等待 2-4 週，屆時會發送通知。寄丟了可向原平台申訴退款。</p>
+    </div>
+
+    <div class="card rounded-lg p-6">
+      <h2 class="title text-lg font-bold amber mb-3">⚖️ 免責聲明</h2>
+      <ul class="space-y-2 text-iron text-sm">
+        <li>• 商品資訊由賣家提供，平台僅提供上架空間</li>
+        <li>• 寄送損壞為物流責任，平台協助聯繫，不直接賠償</li>
+        <li>• 上架請附真實姓名電話以便聯繫</li>
+        <li>• 所有交易爭議由買賣雙方自行負責</li>
+      </ul>
+    </div>
+  </div>
+</main>
+</body>
+</html>

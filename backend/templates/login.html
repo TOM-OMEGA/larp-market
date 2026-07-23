@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登入 - LARP 二手市集</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --parchment: #e8dcc4; --iron: #8a7a6a; }
+  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  h1,.title { font-family: 'Cinzel', serif; }
+  .amber { color: var(--amber); }
+  .btn-primary { background: var(--amber); color: #000; }
+  .card { background: var(--bg-card); border: 1px solid #2a2018; }
+  input { background: #0d0b08; border: 1px solid #3a2a1a; color: var(--parchment); border-radius: 6px; padding: 10px 14px; width: 100%; }
+  input:focus { outline: none; border-color: var(--amber); }
+</style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+<div class="w-full max-w-sm p-6">
+  <h1 class="title text-2xl font-bold amber text-center mb-2">管理後台</h1>
+  <p class="text-center text-iron text-sm mb-6">LARP 二手市集</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% for category, msg in messages %}
+  <div class="mb-4 px-4 py-3 rounded bg-red-900/60 text-red-200 text-sm">{{ msg }}</div>
+  {% endfor %}
+  {% endwith %}
+  <form method="post" class="card rounded-lg p-6">
+    <div class="mb-4">
+      <label class="block text-iron text-sm mb-1">帳號</label>
+      <input name="username" required autofocus>
+    </div>
+    <div class="mb-6">
+      <label class="block text-iron text-sm mb-1">密碼</label>
+      <input name="password" type="password" required>
+    </div>
+    <button type="submit" class="btn-primary w-full py-3 rounded font-bold">登入</button>
+  </form>
+  <div class="text-center mt-4">
+    <a href="/" class="text-iron text-sm hover:text-amber">← 回首頁</a>
+  </div>
+</div>
+</body>
+</html>

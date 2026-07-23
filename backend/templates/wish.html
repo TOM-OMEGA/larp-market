@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>許願 - LARP 二手市集</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --parchment: #e8dcc4; --iron: #8a7a6a; }
+  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  h1,.title { font-family: 'Cinzel', serif; }
+  .amber { color: var(--amber); }
+  .btn-primary { background: var(--amber); color: #000; }
+  .btn-primary:hover { background: #e09520; }
+  .card { background: var(--bg-card); border: 1px solid #2a2018; }
+  .text-iron { color: var(--iron); }
+  input, textarea { background: #0d0b08; border: 1px solid #3a2a1a; color: var(--parchment); border-radius: 6px; padding: 8px 12px; width: 100%; }
+  input:focus, textarea:focus { outline: none; border-color: var(--amber); }
+  label { display: block; margin-bottom: 4px; font-size: 13px; color: var(--iron); }
+  .field { margin-bottom: 16px; }
+</style>
+</head>
+<body class="min-h-screen">
+<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
+  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
+  <div class="flex gap-5 text-sm text-iron">
+    <a href="/market" class="hover:text-amber">市集</a>
+    <a href="/wishlist" class="text-amber">許願區</a>
+    <a href="/list" class="hover:text-amber">上架</a>
+    <a href="/about" class="hover:text-amber">關於</a>
+  </div>
+</nav>
+
+<main class="max-w-xl mx-auto p-6">
+  <h1 class="title text-2xl font-bold amber mb-2">許願</h1>
+  <p class="text-iron text-sm mb-6">許願區是公開的，所有人都能看到。湯姆會協助媒合。</p>
+
+  <form method="post" class="card rounded-lg p-6">
+    <div class="field">
+      <label>想要的物品 *</label>
+      <input name="title" required placeholder="例：泡棉單手劍 70cm 以下">
+    </div>
+    <div class="field">
+      <label>說明</label>
+      <textarea name="description" rows="3" placeholder="可以說明規格、預算、品牌偏好..."></textarea>
+    </div>
+    <div class="field">
+      <label>願付最高價格 (TWD)</label>
+      <input name="max_price" type="number" min="0" placeholder="例：2000">
+    </div>
+
+    <hr class="border-[#2a2018] my-4">
+    <p class="text-iron text-xs mb-3">以下資訊僅湯姆可見</p>
+
+    <div class="grid grid-cols-2 gap-4">
+      <div class="field">
+        <label>你的名字 *</label>
+        <input name="contact_name" required>
+      </div>
+      <div class="field">
+        <label>電話 *</label>
+        <input name="contact_phone" required placeholder="私下聯繫用">
+      </div>
+    </div>
+    <div class="field">
+      <label>Email（選填）</label>
+      <input name="contact_email" type="email">
+    </div>
+
+    <button type="submit" class="btn-primary w-full py-3 rounded font-bold mt-2">發布許願</button>
+  </form>
+</main>
+</body>
+</html>

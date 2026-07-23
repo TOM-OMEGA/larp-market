@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>市集 - LARP 二手市集</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --blood: #7a2020; --parchment: #e8dcc4; --iron: #8a7a6a; }
+  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  h1,.title { font-family: 'Cinzel', serif; }
+  .amber { color: var(--amber); }
+  .blood { background: var(--blood); }
+  .btn-primary { background: var(--amber); color: #000; }
+  .btn-primary:hover { background: #e09520; }
+  .card { background: var(--bg-card); border: 1px solid #2a2018; }
+  .text-iron { color: var(--iron); }
+  input, select { background: #0d0b08; border: 1px solid #3a2a1a; color: var(--parchment); border-radius: 6px; padding: 6px 12px; }
+  input:focus, select:focus { outline: none; border-color: var(--amber); }
+</style>
+</head>
+<body class="min-h-screen">
+<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
+  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
+  <div class="flex gap-5 text-sm text-iron">
+    <a href="/market" class="text-amber">市集</a>
+    <a href="/wishlist" class="hover:text-amber">許願區</a>
+    <a href="/list" class="hover:text-amber">上架</a>
+    <a href="/about" class="hover:text-amber">關於</a>
+  </div>
+</nav>
+
+<main class="max-w-5xl mx-auto p-6">
+  <div class="flex flex-wrap gap-3 mb-6 items-center">
+    <form method="get" class="flex gap-2 flex-1 flex-wrap">
+      <input name="q" value="{{ q }}" placeholder="搜尋..." class="flex-1 min-w-[160px]">
+      <select name="category" onchange="this.form.submit()" class="min-w-[100px]">
+        <option value="">全部</option>
+        <option value="weapon" {% if category=='weapon' %}selected{% endif %}>武器</option>
+        <option value="armor" {% if category=='armor' %}selected{% endif %}>盔甲</option>
+        <option value="prop" {% if category=='prop' %}selected{% endif %}>道具</option>
+        <option value="accessory" {% if category=='accessory' %}selected{% endif %}>配件</option>
+      </select>
+      <select name="overseas" onchange="this.form.submit()" class="min-w-[100px]">
+        <option value="">全部</option>
+        <option value="0" {% if is_overseas=='0' %}selected{% endif %}>台灣</option>
+        <option value="1" {% if is_overseas=='1' %}selected{% endif %}>海外</option>
+      </select>
+      <button type="submit" class="btn-primary px-4 py-2 rounded text-sm">🔍</button>
+    </form>
+    <a href="/list" class="bg-[#1a3020] border border-green-800 px-4 py-2 rounded text-sm text-green-300">➕ 上架</a>
+  </div>
+
+  {% if items %}
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    {% for item in items %}
+    <a href="/item/{{ item.id }}" class="card rounded-lg overflow-hidden hover:ring-2 hover:ring-amber/40 block">
+      {% if item.image_path %}
+      <img src="{{ item.image_path }}" class="w-full h-40 object-cover">
+      {% else %}
+      <div class="w-full h-40 bg-[#0d0b08] flex items-center justify-center text-4xl">⚔</div>
+      {% endif %}
+      <div class="p-3">
+        <div class="title text-sm font-bold truncate">{{ item.title }}</div>
+        <div class="amber text-lg font-bold">${{ item.price }}</div>
+        <div class="flex gap-1 mt-1 flex-wrap">
+          <span class="text-xs bg-[#2a2018] text-iron px-2 py-0.5 rounded">{{ item.category }}</span>
+          {% if item.is_overseas %}<span class="text-xs blood px-2 py-0.5 rounded text-red-200">海外</span>{% endif %}
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="card rounded-lg p-16 text-center text-iron">
+    <div class="text-5xl mb-4">🗡️</div>
+    <p class="text-lg">沒有找到商品</p>
+    <a href="/list" class="inline-block mt-4 bg-[#1a3020] border border-green-800 px-4 py-2 rounded text-green-300">上架第一個</a>
+  </div>
+  {% endif %}
+</main>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>許願管理 - LARP 二手市集</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-deep: #110e0a; --bg-card: #1c1610; --amber: #c8831a; --parchment: #e8dcc4; --iron: #8a7a6a; }
+  body { background: var(--bg-deep); color: var(--parchment); font-family: 'Lora', serif; }
+  h1,.title { font-family: 'Cinzel', serif; }
+  .amber { color: var(--amber); }
+  .card { background: var(--bg-card); border: 1px solid #2a2018; }
+  .text-iron { color: var(--iron); }
+</style>
+</head>
+<body class="min-h-screen">
+<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
+  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
+  <div class="flex gap-4 text-sm text-iron">
+    <a href="/admin" class="hover:text-amber">待審核</a>
+    <a href="/admin/wishes" class="text-amber">許願管理</a>
+    <a href="/logout" class="hover:text-red-400">登出</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto p-6">
+  <h1 class="title text-2xl font-bold amber mb-6">許願管理</h1>
+
+  {% if wishes %}
+  <div class="space-y-4">
+    {% for wish in wishes %}
+    <div class="card rounded-lg p-5">
+      <div class="flex justify-between items-start mb-2">
+        <div>
+          <div class="font-bold text-lg">{{ wish.title }}</div>
+          {% if wish.description %}<div class="text-iron text-sm">{{ wish.description }}</div>{% endif %}
+          {% if wish.max_price %}<div class="amber text-sm mt-1">願付至 ${{ wish.max_price }}</div>{% endif %}
+        </div>
+        <div class="text-right text-sm">
+          <div class="text-iron">{{ wish.contact_name }}</div>
+          <div class="text-iron">{{ wish.contact_phone }}</div>
+          {% if wish.contact_email %}<div class="text-iron text-xs">{{ wish.contact_email }}</div>{% endif %}
+        </div>
+      </div>
+      <div class="text-xs text-iron">📅 {{ wish.created_at[:10] }} · 狀態：{{ wish.status }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="text-iron text-center py-8">沒有許願。</p>
+  {% endif %}
+</main>
+</body>
+</html>
