@@ -22,6 +22,11 @@ ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 MAX_CONTENT_LEN = 10 * 1024 * 1024  # 10MB
 
 app = Flask(__name__, template_folder="templates")
+
+@app.before_request
+def inject_admin():
+    from flask import session
+    g.is_admin = bool(session.get("admin"))
 app.secret_key = os.environ.get("SECRET_KEY", "larp-market-dev-key-2026")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 

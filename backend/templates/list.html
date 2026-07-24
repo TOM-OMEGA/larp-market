@@ -137,6 +137,8 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
   <div class="ni">
     <a href="/" class="nl"><img src="/static/lion-aquitaine.svg" class="shield" alt="⚜">LARP 二手市集</a>
     <ul class="links">
+      {% if g.is_admin %}<li><a href="/admin">後台</a></li>
+      {% endif %}
       <li><a href="/market">市集</a></li>
       <li><a href="/wishlist">許願區</a></li>
       <li><a href="/list" class="active">上架</a></li>
