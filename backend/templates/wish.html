@@ -17,22 +17,13 @@
 --shadow:rgba(42,24,8,0.15)
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:Cormorant Garamond,Georgia,serif;min-height:100vh;font-size:17px;line-height:1.85}
+body{background:rgba(226,208,184,0.6) url("/static/larp-bg.jpg") center/cover no-repeat fixed;color:var(--ink);font-family:Cormorant Garamond,Georgia,serif;min-height:100vh;font-size:17px;line-height:1.85}
 
-/* ── ILLUMINATED MANUSCRIPT BORDER ── */
+/* ── SUBTLE NOISE OVERLAY ── */
 body::before{
 content:'';
 position:fixed;inset:0;z-index:999;pointer-events:none;
-background-image:
-  url("/static/larp-bg.jpg"),
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
-background-size:cover,cover;
-background-position:center,center;
-}
-body::after{
-content:'';
-position:fixed;inset:0;z-index:998;pointer-events:none;
-background:rgba(226,208,184,0.62);
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E");
 }
 
 /* ── CORNER ORNAMENTS ── */
