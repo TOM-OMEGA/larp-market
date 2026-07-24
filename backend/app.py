@@ -14,7 +14,7 @@ from werkzeug.utils import secure_filename
 
 # ── Config ──────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "larp-market.db")
+DB_PATH = os.path.join(BASE_DIR, "larp-market.db")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 
@@ -22,7 +22,7 @@ ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 MAX_CONTENT_LEN = 10 * 1024 * 1024  # 10MB
 
 app = Flask(__name__, template_folder="templates",
-            static_folder=STATIC_DIR, static_url_path="/static")
+            static_folder=STATIC_DIR, static_url_path="")
 
 app.secret_key = os.environ.get("SECRET_KEY", "larp-market-dev-key-2026")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -132,7 +132,13 @@ def save_image(file):
     filename = f"{uuid.uuid4().hex}.{ext}"
     path = os.path.join(UPLOAD_DIR, filename)
     file.save(path)
-    return f"/static/uploads/{filename}"
+    return f"/uploads/{filename}"
+
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename):
+    from flask import send_from_directory
+    return send_from_directory(UPLOAD_DIR, filename)
 
 
 def discord_notify(msg):
@@ -216,27 +222,34 @@ def submit_listing():
         image_path = save_image(request.files.get("image"))
 
         db = get_db()
-        db.execute("""
-            INSERT INTO items (
-                id, title, description, price, category, condition,
-                is_overseas, seller_name, seller_phone, seller_email,
-                image_path, status, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
-        """, (
-            item_id,
-            request.form["title"],
-            request.form.get("description", ""),
-            int(request.form["price"]),
-            request.form.get("category", "weapon"),
-            request.form.get("condition", "used"),
-            1 if request.form.get("is_overseas") else 0,
-            request.form["seller_name"],
-            request.form["seller_phone"],
-            request.form.get("seller_email", ""),
-            image_path,
-            now, now
-        ))
-        db.commit()
+        try:
+            db.execute("""
+                INSERT INTO items (
+                    id, title, description, price, category, condition,
+                    is_overseas, seller_name, seller_phone, seller_email,
+                    image_path, status, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+            """, (
+                item_id,
+                request.form["title"],
+                request.form.get("description", ""),
+                int(request.form["price"]),
+                request.form.get("category", "weapon"),
+                request.form.get("condition", "used"),
+                1 if request.form.get("is_overseas") else 0,
+                request.form["seller_name"],
+                request.form["seller_phone"],
+                request.form.get("seller_email", ""),
+                image_path,
+                now, now
+            ))
+            db.commit()
+        except Exception as e:
+            import sys
+            sys.stderr.write(f"DB ERROR: {e}\n")
+            db.rollback()
+            flash(f"上傳失敗：{e}", "error")
+            return redirect(url_for("submit_listing"))
 
         discord_notify(
             f"📦 新上架申請：{request.form['title']}\n"
