@@ -24,22 +24,15 @@ body::before{
 content:'';
 position:fixed;inset:0;z-index:999;pointer-events:none;
 background-image:
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E"),
-  radial-gradient(ellipse at 25% 20%,rgba(210,175,110,0.12) 0%,transparent 55%),
-  radial-gradient(ellipse at 80% 85%,rgba(150,95,45,0.08) 0%,transparent 50%);
+  url("/static/larp-bg.jpg"),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+background-size:cover,cover;
+background-position:center,center;
 }
-
-/* outer frame */
 body::after{
 content:'';
-position:fixed;inset:14px;z-index:998;pointer-events:none;
-border:3px solid var(--gold);
-box-shadow:
-  inset 0 0 0 6px var(--bg),
-  inset 0 0 0 8px var(--gold-dark),
-  inset 0 0 0 12px var(--bg),
-  inset 0 0 0 14px rgba(160,112,32,0.4),
-  0 0 30px rgba(160,112,32,0.15);
+position:fixed;inset:0;z-index:998;pointer-events:none;
+background:rgba(226,208,184,0.62);
 }
 
 /* ── CORNER ORNAMENTS ── */
