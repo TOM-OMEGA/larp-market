@@ -15,13 +15,14 @@ from werkzeug.utils import secure_filename
 # ── Config ──────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "..", "larp-market.db")
-STATIC_DIR = os.path.join(BASE_DIR, "..", "static")
-UPLOAD_DIR = os.path.join(BASE_DIR, "..", "static", "uploads")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")
 
 ALLOWED_EXT = {"png", "jpg", "jpeg", "gif", "webp"}
 MAX_CONTENT_LEN = 10 * 1024 * 1024  # 10MB
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__, template_folder="templates",
+            static_folder=STATIC_DIR, static_url_path="/static")
 
 app.secret_key = os.environ.get("SECRET_KEY", "larp-market-dev-key-2026")
 os.makedirs(UPLOAD_DIR, exist_ok=True)

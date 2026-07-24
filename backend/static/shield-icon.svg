@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 140" width="120" height="140">
+  <!-- Shield outer -->
+  <path d="M60 5 L110 22 L110 72 Q110 105 60 135 Q10 105 10 72 L10 22 Z" fill="#a07020" stroke="#705010" stroke-width="2.5"/>
+  <!-- Shield inner gold -->
+  <path d="M60 14 L102 28 L102 72 Q102 100 60 128 Q18 100 18 72 L18 28 Z" fill="#c09040"/>
+  
+  <!-- Heraldic Lion Rampant - simplified flat heraldic style -->
+  <g transform="translate(60,72)">
+    <!-- back left leg (grounded) -->
+    <path d="M12 20 L16 44 L22 44 L20 18Z" fill="#705010"/>
+    <!-- back right leg (grounded) -->
+    <path d="M20 22 L24 46 L30 46 L26 20Z" fill="#705010"/>
+    <!-- body (vertical) -->
+    <ellipse cx="8" cy="8" rx="16" ry="20" fill="#705010"/>
+    <!-- tail curving up -->
+    <path d="M24 2 Q38 -4 42 10 Q38 18 34 12" fill="none" stroke="#705010" stroke-width="5" stroke-linecap="round"/>
+    <!-- front left paw (raised) -->
+    <path d="M-6 -4 L-2 -22 L6 -20 L2 -2Z" fill="#705010"/>
+    <!-- front right paw (raised higher) -->
+    <path d="M2 -6 L6 -24 L14 -22 L10 -4Z" fill="#705010"/>
+    <!-- mane -->
+    <circle cx="-8" cy="-14" r="12" fill="#a07020"/>
+    <!-- head -->
+    <circle cx="-12" cy="-18" r="8" fill="#705010"/>
+    <!-- snout -->
+    <ellipse cx="-20" cy="-16" rx="5" ry="4" fill="#c09040"/>
+    <!-- eye -->
+    <circle cx="-14" cy="-20" r="2" fill="#c09040"/>
+    <!-- claws on raised paws -->
+    <circle cx="-1" cy="-22" r="2" fill="#c09040"/>
+    <circle cx="5" cy="-23" r="2" fill="#c09040"/>
+    <!-- claws on grounded paws -->
+    <circle cx="17" cy="44" r="2" fill="#c09040"/>
+    <circle cx="23" cy="44" r="2" fill="#c09040"/>
+  </g>
+</svg>
