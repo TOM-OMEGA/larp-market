@@ -245,7 +245,7 @@ def submit_listing():
             f"📦 新上架申請：{request.form['title']}\n"
             f"💰 價格：${request.form['price']}\n"
             f"👤 賣家：{request.form['seller_name']}\n"
-            f"🔗 https://larp.example.com/admin"
+            f"🔗 https://sheer-spirits-galaxy-trustees.trycloudflare.com/admin"
         )
 
         flash("已送出審核，請等待通知", "success")
