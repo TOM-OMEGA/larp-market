@@ -56,7 +56,12 @@
           {% if wish.contact_email %}<div class="text-iron text-xs">{{ wish.contact_email }}</div>{% endif %}
         </div>
       </div>
-      <div class="text-xs text-iron">📅 {{ wish.created_at[:10] }} · 狀態：{{ wish.status }}</div>
+      <div class="flex justify-between items-center">
+        <div class="text-xs text-iron">📅 {{ wish.created_at[:10] }} · 狀態：{{ wish.status }}</div>
+        <form action="/admin/delete_wish/{{ wish.id }}" method="post" onsubmit="return confirm('確定刪除？')">
+          <button class="bg-gray-900 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded text-sm">🗑 刪除</button>
+        </form>
+      </div>
     </div>
     {% endfor %}
   </div>

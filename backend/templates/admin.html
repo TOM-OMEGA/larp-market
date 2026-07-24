@@ -74,6 +74,9 @@
         <form action="/admin/reject/{{ item.id }}" method="post" class="flex-1">
           <button class="bg-red-900 hover:bg-red-800 text-red-200 w-full py-2 rounded text-sm font-bold">❌ 駁回</button>
         </form>
+        <form action="/admin/delete/{{ item.id }}" method="post" onsubmit="return confirm('確定刪除？')">
+          <button class="bg-gray-900 hover:bg-gray-700 text-gray-300 px-3 py-2 rounded text-sm">🗑 刪除</button>
+        </form>
       </div>
     </div>
     {% endfor %}
@@ -111,6 +114,9 @@
         {% endif %}
         <form action="/admin/cancel/{{ item.id }}" method="post">
           <button class="text-red-400 hover:text-red-300 px-3 py-1 rounded text-sm">✕</button>
+        </form>
+        <form action="/admin/delete/{{ item.id }}" method="post" onsubmit="return confirm('確定刪除？')">
+          <button class="bg-gray-900 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded text-sm">🗑</button>
         </form>
       </div>
     </div>

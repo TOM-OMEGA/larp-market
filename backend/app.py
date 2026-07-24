@@ -395,6 +395,24 @@ def approve_item(item_id):
     return redirect(url_for("admin"))
 
 
+@app.route("/admin/delete/<item_id>", methods=["POST"])
+@admin_required
+def delete_item(item_id):
+    db = get_db()
+    # Get image_path to delete file
+    item = db.execute("SELECT image_path FROM items WHERE id=?", (item_id,)).fetchone()
+    if item and item["image_path"]:
+        import os
+        filename = os.path.basename(item["image_path"])
+        filepath = os.path.join(UPLOAD_DIR, filename)
+        if os.path.exists(filepath):
+            os.remove(filepath)
+    db.execute("DELETE FROM items WHERE id=?", (item_id,))
+    db.commit()
+    flash("已刪除", "success")
+    return redirect(url_for("admin"))
+
+
 @app.route("/admin/reject/<item_id>", methods=["POST"])
 @admin_required
 def reject_item(item_id):
@@ -482,6 +500,16 @@ def admin_wishes():
         "SELECT * FROM wishes ORDER BY created_at DESC"
     ).fetchall()
     return render_template("admin_wishes.html", wishes=wishes)
+
+
+@app.route("/admin/delete_wish/<wish_id>", methods=["POST"])
+@admin_required
+def delete_wish(wish_id):
+    db = get_db()
+    db.execute("DELETE FROM wishes WHERE id=?", (wish_id,))
+    db.commit()
+    flash("已刪除", "success")
+    return redirect(url_for("admin_wishes"))
 
 
 # ── Init ─────────────────────────────────────────────────
