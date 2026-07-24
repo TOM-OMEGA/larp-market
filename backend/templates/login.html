@@ -8,248 +8,136 @@
 <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
---bg:#e2d0b8;--bg-deep:#d0be98;--bg-paper:#ede0c4;
---card:#f2e8d4;--card-border:#b08840;--card-dark:#c49a50;
---ink:#2a1808;--ink-light:#5a3820;--ink-faint:#8a6840;
---gold:#a07020;--gold-light:#c09040;--gold-pale:#f5e8b0;--gold-dark:#705010;
+--bg:#e8d5b8;--bg-paper:#ede0c4;
+--card:#f5ead8;--card-border:#b89860;--card-dark:#c4a070;
+--ink:#2d1a08;--ink-light:#6b4a28;--ink-faint:#9a7858;
+--gold:#a07020;--gold-light:#c09040;--gold-pale:#f8ecd0;--gold-dark:#705010;
 --wine:#7a1828;--wine-pale:#f5e8ea;
 --green:#2a5020;--dim:#8a7058;
---shadow:rgba(42,24,8,0.15)
+--shadow:rgba(45,26,6,0.12)
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:rgba(226,208,184,0.6) url("/static/larp-bg.jpg") center/cover no-repeat fixed;color:var(--ink);font-family:Cormorant Garamond,Georgia,serif;min-height:100vh;font-size:17px;line-height:1.85}
-
-/* ── SUBTLE NOISE OVERLAY ── */
+body{
+background:var(--bg);
+color:var(--ink);
+font-family:Cormorant Garamond,Georgia,serif;
+min-height:100vh;
+font-size:17px;
+line-height:1.85;
+}
+/* subtle paper grain */
 body::before{
 content:'';
 position:fixed;inset:0;z-index:999;pointer-events:none;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.1'/%3E%3C/svg%3E");
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.07'/%3E%3C/svg%3E");
 }
 
-/* ── CORNER ORNAMENTS ── */
-.corner-tl,.corner-tr,.corner-bl,.corner-br{
-position:fixed;width:52px;height:52px;z-index:1000;pointer-events:none
-}
-.corner-tl{top:4px;left:4px}
-.corner-tr{top:4px;right:4px;transform:scaleX(-1)}
-.corner-bl{bottom:4px;left:4px;transform:scaleY(-1)}
-.corner-br{bottom:4px;right:4px;transform:scale(-1,-1)}
-.corner-tl::before,.corner-tr::before,.corner-bl::before,.corner-br::before{
-content:'';
-position:absolute;inset:0;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='52' height='52'%3E%3Cpath d='M4 4 L24 4 L24 12 L12 12 L12 24 L4 24 Z' fill='%23a07020' opacity='0.9'/%3E%3Cpath d='M8 8 L20 8 L20 16 L16 16 L16 20 L8 20 Z' fill='%23f5e8b0'/%3E%3Ccircle cx='14' cy='14' r='2' fill='%23705010'/%3E%3Cpath d='M22 4 Q26 8 26 14 Q22 12 22 4Z' fill='%23a07020' opacity='0.8'/%3E%3Cpath d='M4 22 Q8 26 14 26 Q12 22 4 22Z' fill='%23a07020' opacity='0.8'/%3E%3Cpath d='M4 4 Q8 8 14 8 Q12 4 4 4Z' fill='%23c09040'/%3E%3C/svg%3E");
-background-size:contain;background-repeat:no-repeat
-}
-
-/* ── PAGE WRAPPER ── */
-.page-wrap{
-max-width:1080px;
-margin:0 auto;
-padding:3rem 3rem 4rem;
-}
-
-/* ── ANIMATIONS ── */
 @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.afu{animation:fu .6s ease-out both}
+.afu{animation:fu .5s ease-out both}
 
-/* ── TYPOGRAPHY ── */
-h1,h2,.nl,.section-title,.tag{font-family:Uncial Antiqua,serif}
-h1{font-size:2.3rem;font-weight:400;color:var(--ink);letter-spacing:.05em;
-  text-shadow:2px 2px 4px rgba(42,24,8,0.15)}
-h2{font-size:1.55rem;font-weight:400;color:var(--ink)}
-.nl{font-size:1.1rem;font-weight:400;color:var(--gold);
-  text-shadow:1px 1px 2px rgba(160,112,32,0.25);letter-spacing:.1em}
+/* typography */
+h1,h2,.nl,.section-title,.tag,.it,.ip2{font-family:Uncial Antiqua,serif}
+h1{font-size:2.4rem;font-weight:400;color:var(--ink);letter-spacing:.04em;text-shadow:1px 1px 0 rgba(160,112,32,0.15)}
+h2{font-size:1.5rem;font-weight:400;color:var(--ink)}
+.nl{font-size:1.1rem;color:var(--gold);letter-spacing:.1em;text-shadow:1px 1px 0 rgba(160,112,32,0.2)}
 
-/* ── DROP CAP ── */
+/* drop cap — the ONE decorative element */
 .drop-cap::first-letter{
 font-family:Uncial Antiqua,serif;
-font-size:4em;
-float:left;
-line-height:.75;
+font-size:4em;float:left;line-height:.72;
 margin:.04em .1em 0 0;
-color:var(--gold);
-text-shadow:2px 2px 0 var(--gold-dark),3px 3px 6px rgba(42,24,8,0.18)
+color:var(--gold);text-shadow:2px 2px 0 var(--gold-dark)
 }
 
-/* ── ORNAMENTAL DIVIDER ── */
-.orn-divider{
-text-align:center;
-margin:2rem 0;
-color:var(--gold);
-font-size:1rem;
-letter-spacing:.5em;
-position:relative;
-display:flex;
-align-items:center;
-gap:.8rem;
-padding:0 1rem
-}
-.orn-divider::before,.orn-divider::after{
-content:'';flex:1;height:2px;
-background:linear-gradient(90deg,transparent,var(--gold-dark),var(--gold),var(--gold-dark),transparent)
-}
-
-/* ── BANNER ── */
-.banner{
-text-align:center;
-padding:2.5rem 1rem 2rem;
-}
-.banner h1{
-font-size:2.6rem;
-color:var(--ink);
-margin-bottom:.4rem
-}
-.banner p{
-font-family:Cormorant Garamond,serif;
-color:var(--dim);
-font-style:italic;
-font-size:1.1rem;
-margin-top:.3rem
-}
-
-/* ── NAV ── */
-.n{background:var(--card);border-bottom:2px solid var(--gold);
-  padding:.85rem 0;box-shadow:0 3px 12px var(--shadow)}
-.ni{display:flex;align-items:center;justify-content:space-between;padding:0 1rem}
-.links{display:flex;gap:2.2rem;list-style:none}
-.links a{font-family:Uncial Antiqua,serif;font-size:.78rem;
-  color:var(--ink-light);text-decoration:none;
-  letter-spacing:.14em;padding-bottom:2px;
-  border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+/* nav */
+.n{background:var(--card);border-bottom:2px solid var(--gold);padding:.9rem 2rem;box-shadow:0 2px 10px var(--shadow)}
+.ni{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.shield{width:36px;height:36px;vertical-align:middle;margin-right:.6rem}
+.links{display:flex;gap:2rem;list-style:none}
+.links a{font-family:Uncial Antiqua,serif;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-light);text-decoration:none;padding-bottom:2px;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
 .links a:hover,.links a.active{color:var(--gold);border-bottom-color:var(--gold)}
 
-/* ── CARDS ── */
-.card{background:var(--card);border:1px solid var(--card-border);
-  position:relative;
-  box-shadow:4px 4px 0 var(--card-border),6px 6px 0 rgba(42,24,8,0.08)}
-.card::before{
-content:'';position:absolute;top:0;left:0;right:0;height:4px;
-background:linear-gradient(90deg,var(--card-border),var(--gold),var(--gold),var(--card-border))}
-.card::after{
-content:'';position:absolute;bottom:0;right:0;
-width:22px;height:22px;
-border-right:2px solid var(--card-border);
-border-bottom:2px solid var(--card-border);
-background:linear-gradient(135deg,transparent 50%,rgba(42,24,8,0.05) 50%)}
-.cp{padding:1.8rem 2rem}
+/* cards — worn paper feel, no heavy shadow */
+.card{background:var(--card);border:1px solid var(--card-border);position:relative;box-shadow:3px 3px 0 var(--card-dark)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold);opacity:.5}
+.cp{padding:1.6rem 1.8rem}
 
-/* ── BUTTONS ── */
-.btn-p{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.8rem;letter-spacing:.18em;
-  background:var(--gold);color:#fff;border:none;padding:.75rem 2rem;text-decoration:none;
-  box-shadow:3px 3px 0 var(--card-border),4px 4px 0 rgba(42,24,8,0.1);
-  transition:background .2s,transform .15s,box-shadow .2s;text-shadow:1px 1px 0 rgba(42,24,8,0.3)}
-.btn-p:hover{background:#b08028;transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--card-border)}
-.btn-o{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.8rem;letter-spacing:.18em;
-  background:transparent;color:var(--gold);border:2px solid var(--gold);
-  padding:.75rem 2rem;text-decoration:none;
-  box-shadow:3px 3px 0 var(--card-border);
-  transition:background .2s,color .2s,transform .15s,box-shadow .2s}
-.btn-o:hover{background:var(--gold);color:#fff;transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--card-border)}
-.btn-w{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.8rem;letter-spacing:.18em;
-  background:var(--wine);color:#fff;border:none;padding:.75rem 2rem;text-decoration:none;
-  box-shadow:3px 3px 0 rgba(122,24,40,0.4),4px 4px 0 rgba(42,24,8,0.1);
-  transition:background .2s,transform .15s,box-shadow .2s}
-.btn-w:hover{background:#8a2030;transform:translate(-2px,-2px);box-shadow:5px 5px 0 rgba(122,24,40,0.4)}
+/* buttons */
+.btn-p{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;background:var(--gold);color:#fff;border:none;padding:.7rem 1.8rem;text-decoration:none;transition:background .2s,transform .15s;box-shadow:2px 2px 0 var(--gold-dark)}
+.btn-p:hover{background:var(--gold-light);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--gold-dark)}
+.btn-o{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;background:transparent;color:var(--gold);border:2px solid var(--gold);padding:.7rem 1.8rem;text-decoration:none;transition:background .2s,color .2s,transform .15s;box-shadow:2px 2px 0 var(--card-dark)}
+.btn-o:hover{background:var(--gold);color:#fff;transform:translate(-1px,-1px)}
+.btn-w{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;background:var(--wine);color:#fff;border:none;padding:.7rem 1.8rem;text-decoration:none;transition:background .2s,transform .15s;box-shadow:2px 2px 0 rgba(122,24,40,0.5)}
+.btn-w:hover{background:#8a2030;transform:translate(-1px,-1px)}
 
-/* ── TAGS ── */
-.tag{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.65rem;
-  letter-spacing:.12em;background:var(--gold-pale);color:var(--gold);
-  padding:2px 8px;border:1px solid rgba(160,112,32,0.35);margin-right:.4rem}
-.tag.overseas{background:#ece0ff;color:#6030a0;border-color:rgba(96,48,160,0.35)}
-.tag.wine{background:var(--wine-pale);color:var(--wine);border-color:rgba(122,24,40,0.35)}
+/* tags */
+.tag{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;background:var(--gold-pale);color:var(--gold);padding:2px 7px;border:1px solid rgba(160,112,32,0.3);margin-right:.3rem}
+.tag.overseas{background:#ece0ff;color:#6030a0;border-color:rgba(96,48,160,0.3)}
+.tag.wine{background:var(--wine-pale);color:var(--wine);border-color:rgba(122,24,40,0.3)}
 
-/* ── FORMS ── */
-input,select,textarea{background:var(--bg-paper);border:1.5px solid var(--card-border);
-  color:var(--ink);padding:.7rem 1rem;font-family:Cormorant Garamond,serif;font-size:1rem;
-  outline:none;transition:border-color .2s;width:100%;border-radius:2px;
-  box-shadow:inset 2px 2px 4px rgba(42,24,8,0.05)}
-input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none;box-shadow:none}
-input::placeholder,textarea::placeholder{color:var(--ink-faint);font-style:italic;font-size:.95rem}
-label{display:block;margin-bottom:.4rem;font-family:Uncial Antiqua,serif;
-  font-size:.75rem;letter-spacing:.12em;color:var(--ink-light)}
-.field{margin-bottom:1.4rem}
-hr{border:none;border-top:1px solid var(--card-border);margin:1.8rem 0}
-.checkbox{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+/* forms */
+input,select,textarea{background:var(--bg-paper);border:1.5px solid var(--card-border);color:var(--ink);padding:.65rem 1rem;font-family:Cormorant Garamond,serif;font-size:1rem;outline:none;transition:border-color .2s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+input::placeholder,textarea::placeholder{color:var(--ink-faint);font-style:italic}
+label{display:block;margin-bottom:.35rem;font-family:Uncial Antiqua,serif;font-size:.72rem;letter-spacing:.1em;color:var(--ink-light)}
+.field{margin-bottom:1.3rem}
+hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
+.checkbox{display:flex;align-items:center;gap:.5rem;cursor:pointer}
 .checkbox input{width:auto}
 .checkbox span{font-family:Cormorant Garamond,serif;color:var(--ink-light);font-size:.95rem}
 
-/* ── GRID ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.4rem}
-.ic{background:var(--card);border:1px solid var(--card-border);text-decoration:none;display:block;
-  box-shadow:4px 4px 0 var(--card-border),6px 6px 0 rgba(42,24,8,0.08);
-  transition:transform .25s,box-shadow .25s,border-color .25s}
-.ic:hover{transform:translate(-3px,-3px);box-shadow:7px 7px 0 var(--card-border),9px 9px 0 rgba(42,24,8,0.1);border-color:var(--gold)}
-.iw{width:100%;height:150px;overflow:hidden;background:var(--bg-deep)}
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.3rem}
+.ic{background:var(--card);border:1px solid var(--card-border);text-decoration:none;display:block;box-shadow:3px 3px 0 var(--card-dark);transition:transform .25s,box-shadow .25s,border-color .25s}
+.ic:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--card-dark);border-color:var(--gold)}
+.iw{width:100%;height:150px;overflow:hidden;background:#d8c8a0}
 .iw img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
-.ic:hover .iw img{transform:scale(1.07)}
-.ip{width:100%;height:150px;background:var(--bg-deep);display:flex;align-items:center;
-  justify-content:center;font-size:2.5rem;color:var(--card-border);font-family:Uncial Antiqua,serif}
-.ib{padding:1rem}
-.it{font-family:Uncial Antiqua,serif;font-size:.8rem;color:var(--ink);
-  letter-spacing:.05em;margin-bottom:.4rem;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ip2{font-family:Uncial Antiqua,serif;font-size:1.05rem;color:var(--gold)}
+.ic:hover .iw img{transform:scale(1.06)}
+.ip{width:100%;height:150px;background:#d8c8a0;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--card-border);font-family:Uncial Antiqua,serif}
+.ib{padding:.9rem}
+.it{font-family:Uncial Antiqua,serif;font-size:.8rem;color:var(--ink);letter-spacing:.04em;margin-bottom:.35rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ip2{font-family:Uncial Antiqua,serif;font-size:1rem;color:var(--gold)}
 
-/* ── LOGIN ── */
-.center{text-align:center;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;min-height:calc(100vh - 28px);padding:2rem}
-.login-box{background:var(--card);border:1px solid var(--card-border);padding:2.8rem;
-  width:100%;max-width:420px;
-  box-shadow:5px 5px 0 var(--card-border),7px 7px 0 rgba(42,24,8,0.1);
-  position:relative}
-.login-box::before{
-content:'';position:absolute;top:0;left:0;right:0;height:4px;
-background:linear-gradient(90deg,var(--card-border),var(--gold),var(--card-border))}
-
-/* ── MISC ── */
-.flash{padding:.8rem 1.2rem;border-left:3px solid var(--gold);
-  background:var(--gold-pale);color:var(--gold);
-  font-family:Cormorant Garamond,serif;font-style:italic;margin-bottom:1.5rem}
-.empty{text-align:center;padding:3rem;color:var(--dim);
-  border:1px dashed var(--card-border);font-family:Cormorant Garamond,serif;
-  font-style:italic;font-size:1.05rem;background:var(--card)}
-.wish-card{background:var(--card);border:1px solid var(--card-border);
-  padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:.7rem;border-left:4px solid var(--wine);
-  box-shadow:3px 3px 0 var(--card-border);
-  transition:border-color .2s,box-shadow .2s}
-.wish-card:hover{border-left-color:var(--gold);box-shadow:4px 4px 0 var(--card-border)}
-.wn{font-family:Cormorant Garamond,serif;font-size:1.05rem;color:var(--ink);font-style:italic}
-.wp{font-family:Uncial Antiqua,serif;font-size:.8rem;color:var(--dim);letter-spacing:.05em}
-.meta{font-family:Cormorant Garamond,serif;font-size:.9rem;color:var(--dim);
-  margin-top:.8rem;font-style:italic;border-top:1px solid var(--card-border);padding-top:.8rem}
-.status{font-family:Uncial Antiqua,serif;font-size:.8rem;letter-spacing:.05em;margin-top:.4rem}
+/* misc */
+.flash{padding:.75rem 1.1rem;border-left:3px solid var(--gold);background:var(--gold-pale);color:var(--gold);font-family:Cormorant Garamond,serif;font-style:italic;margin-bottom:1.4rem}
+.empty{text-align:center;padding:3rem;color:var(--dim);border:1px dashed var(--card-border);font-family:Cormorant Garamond,serif;font-style:italic;font-size:1rem;background:var(--card)}
+.wish-card{background:var(--card);border:1px solid var(--card-border);padding:.85rem 1.1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.65rem;border-left:3px solid var(--wine);transition:border-color .2s}
+.wish-card:hover{border-left-color:var(--gold)}
+.wn{font-family:Cormorant Garamond,serif;font-size:1rem;color:var(--ink);font-style:italic}
+.wp{font-family:Uncial Antiqua,serif;font-size:.78rem;color:var(--dim)}
+.meta{font-family:Cormorant Garamond,serif;font-size:.88rem;color:var(--dim);margin-top:.8rem;font-style:italic;border-top:1px solid var(--card-border);padding-top:.8rem}
+.status{font-family:Uncial Antiqua,serif;font-size:.8rem;letter-spacing:.04em;margin-top:.35rem}
 .status.y{color:#a07020}.status.b{color:#3a6090}.status.g{color:var(--green)}
-.overseas-note{background:#f0ecff;border-left:3px solid #6030a0;
-  padding:1rem 1.3rem;margin:1.3rem 0;font-style:italic;color:#5030a0;font-size:.95rem}
-.ft{margin-top:5rem;padding:2.5rem 1rem;border-top:2px solid var(--gold);text-align:center}
-.ft p{font-family:Cormorant Garamond,serif;font-size:.85rem;color:var(--dim);font-style:italic}
-.section-title{font-family:Uncial Antiqua,serif;font-size:.85rem;font-weight:400;
-  color:var(--ink);letter-spacing:.1em;margin-bottom:1.5rem;
-  border-bottom:1px solid var(--card-border);padding-bottom:.5rem}
-.deposit-box{background:var(--gold-pale);border:1.5px solid var(--gold);
-  padding:1.3rem;text-align:center;margin:1.5rem 0}
-.deposit-price{font-family:Uncial Antiqua,serif;font-size:2.5rem;color:var(--gold)}
+.overseas-note{background:#f0ecff;border-left:3px solid #6030a0;padding:.9rem 1.2rem;margin:1.2rem 0;font-style:italic;color:#5030a0;font-size:.95rem}
+.section-title{font-family:Uncial Antiqua,serif;font-size:.82rem;color:var(--ink);letter-spacing:.1em;margin-bottom:1.3rem;border-bottom:1px solid var(--card-border);padding-bottom:.5rem}
+.deposit-box{background:var(--gold-pale);border:1.5px solid var(--gold);padding:1.2rem;text-align:center;margin:1.4rem 0}
+.deposit-price{font-family:Uncial Antiqua,serif;font-size:2.4rem;color:var(--gold)}
 
+/* login */
+.center{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+.login-box{background:var(--card);border:1px solid var(--card-border);padding:2.5rem;width:100%;max-width:400px;box-shadow:4px 4px 0 var(--card-dark)}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--gold)}
+
+/* footer */
+.ft{margin-top:4rem;padding:2rem 1rem;border-top:1px solid var(--card-border);text-align:center}
+.ft p{font-family:Cormorant Garamond,serif;font-size:.85rem;color:var(--dim);font-style:italic}
+
+/* responsive */
 @media(max-width:640px){
-  .page-wrap{padding:2rem 1.5rem 3rem}
-  .links{gap:1.2rem}
-  .links a{font-size:.72rem;letter-spacing:.08em}
+  .links{gap:1rem}.links a{font-size:.68rem;letter-spacing:.08em}
   .grid{grid-template-columns:repeat(2,1fr);gap:.9rem}
   h1{font-size:1.8rem}
-  .corner-tl,.corner-tr,.corner-bl,.corner-br{width:36px;height:36px}
 }
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px}
 
 </style>
 </head>
 <body>
-<div class="corner-tl"></div><div class="corner-tr"></div><div class="corner-bl"></div><div class="corner-br"></div>
 <div class="center">
-  <div class="login-box afu">
-    <div style="text-align:center;margin-bottom:2.5rem;">
-      <div style="font-size:2rem;margin-bottom:.5rem;font-family:Uncial Antiqua,serif;color:var(--gold);">&#9876;</div>
-      <div style="font-family:Uncial Antiqua,serif;font-size:1.5rem;color:var(--gold);letter-spacing:.08em;">管理後台</div>
+  <div class="login-box" style="position:relative;">
+    <div style="text-align:center;margin-bottom:2rem;">
+      <img src="/static/shield-icon.jpg" style="width:48px;height:48px;margin-bottom:.6rem;" alt="⚜">
+      <div style="font-family:Uncial Antiqua,serif;font-size:1.4rem;color:var(--gold);letter-spacing:.08em;">管理後台</div>
       <div style="font-family:Cormorant Garamond,serif;color:var(--dim);font-style:italic;margin-top:.4rem;">LARP 二手市集</div>
     </div>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -262,7 +150,7 @@ background:linear-gradient(90deg,var(--card-border),var(--gold),var(--card-borde
       <div class="field"><label>密碼</label><input name="password" type="password" required></div>
       <button type="submit" class="btn-p" style="width:100%;">登入</button>
     </form>
-    <div style="text-align:center;margin-top:1.8rem;">
+    <div style="text-align:center;margin-top:1.6rem;">
       <a href="/" style="font-family:Cormorant Garamond,serif;color:var(--dim);font-style:italic;text-decoration:none;font-size:.95rem;">&#8592; 回首頁</a>
     </div>
   </div>
