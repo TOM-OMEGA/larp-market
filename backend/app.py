@@ -408,6 +408,7 @@ def logout():
 @admin_required
 def admin():
     db = get_db()
+    tab = request.args.get("tab", "pending")
     pending = db.execute(
         "SELECT * FROM items WHERE status='pending' ORDER BY created_at DESC"
     ).fetchall()
@@ -415,7 +416,11 @@ def admin():
         "SELECT * FROM items WHERE status NOT IN ('pending','sold','cancelled') "
         "ORDER BY updated_at DESC"
     ).fetchall()
-    return render_template("admin.html", pending=pending, active=active)
+    wishes = db.execute(
+        "SELECT * FROM wishes ORDER BY created_at DESC LIMIT 20"
+    ).fetchall()
+    return render_template("admin.html", pending=pending, active=active,
+                           wishes=wishes, tab=tab)
 
 
 @app.route("/admin/approve/<item_id>", methods=["POST"])
