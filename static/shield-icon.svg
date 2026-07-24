@@ -1,6 +1,29 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 120" width="100" height="120">
-  <path d="M50 4 L90 18 L90 60 Q90 90 50 116 Q10 90 10 60 L10 18 Z" fill="#a07020" stroke="#705010" stroke-width="3"/>
-  <path d="M50 12 L82 24 L82 58 Q82 84 50 106 Q18 84 18 58 L18 24 Z" fill="#c09040"/>
-  <path d="M50 28 L50 80 M35 48 L65 48" stroke="#705010" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="50" cy="54" r="8" fill="#705010"/>
+  <!-- Shield shape -->
+  <path d="M50 4 L90 18 L90 60 Q90 90 50 116 Q10 90 10 60 L10 18 Z" fill="#a07020" stroke="#705010" stroke-width="2"/>
+  <path d="M50 10 L84 22 L84 58 Q84 86 50 110 Q16 86 16 58 L16 22 Z" fill="#c09040"/>
+  <!-- Heraldic lion rampant - simplified -->
+  <g transform="translate(50,56) scale(0.5)">
+    <!-- body -->
+    <ellipse cx="0" cy="5" rx="22" ry="14" fill="#705010"/>
+    <!-- head -->
+    <circle cx="-14" cy="-10" r="10" fill="#705010"/>
+    <!-- mane -->
+    <circle cx="-14" cy="-10" r="13" fill="none" stroke="#a07020" stroke-width="4"/>
+    <!-- snout -->
+    <ellipse cx="-22" cy="-8" rx="5" ry="3" fill="#c09040"/>
+    <!-- eye -->
+    <circle cx="-17" cy="-13" r="2" fill="#c09040"/>
+    <!-- front legs -->
+    <path d="M-6 -2 L-2 -18 L4 -16 L0 0Z" fill="#705010"/>
+    <path d="M2 0 L8 -16 L14 -14 L8 0Z" fill="#705010"/>
+    <!-- back legs -->
+    <path d="M14 8 L18 22 L24 20 L20 6Z" fill="#705010"/>
+    <path d="M22 10 L28 24 L34 22 L28 8Z" fill="#705010"/>
+    <!-- tail -->
+    <path d="M22 2 Q35 -5 40 8 Q42 15 38 12" fill="none" stroke="#705010" stroke-width="4" stroke-linecap="round"/>
+    <!-- claws -->
+    <circle cx="-2" cy="-18" r="2" fill="#c09040"/>
+    <circle cx="8" cy="-16" r="2" fill="#c09040"/>
+  </g>
 </svg>
