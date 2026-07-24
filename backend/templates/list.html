@@ -5,154 +5,231 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>上架 - LARP 二手市集</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
---bg:#e2d0b8;--bg-paper:#ede0c4;
---card:#f5ead8;--card-border:#c4a882;
---ink:#2d1a06;--ink-light:#6b5030;
---gold:#a07020;--gold-light:#c09040;--gold-pale:#f5e8c0;
---wine:#7a1828;--wine-light:#a02030;
---green:#2a5020;--green-light:#3a6830;
---dim:#8a7058;
---shadow:rgba(45,26,6,0.12)
+--bg:#e8d5b8;--bg-deep:#d8c5a0;
+--card:#f2e8d4;--card-border:#b89860;--card-dark:#c4a060;
+--ink:#2a1808;--ink-light:#6b4a28;--ink-faint:#9a7a58;
+--gold:#a07020;--gold-light:#c09040;--gold-pale:#f5e8b8;
+--wine:#7a1828;--wine-pale:#f5e8ea;
+--green:#2a5020;--dim:#8a7058;
+--shadow:rgba(42,24,8,0.15)
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--ink);font-family:Cormorant Garamond,Georgia,serif;min-height:100vh}
+body{background:var(--bg);color:var(--ink);font-family:Cormorant Garamond,Georgia,serif;min-height:100vh;font-size:17px;line-height:1.85}
 
-/* ── PARCHMENT TEXTURE ── */
+/* ── PARCHMENT BASE + STRONGER NOISE ── */
 body::before{
 content:'';
-position:fixed;inset:0;
+position:fixed;inset:0;z-index:999;pointer-events:none;
 background-image:
-  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
-  repeating-linear-gradient(
-    120deg, transparent, transparent 80px,
-    rgba(160,112,48,0.03) 80px, rgba(160,112,48,0.03) 81px
-  );
-pointer-events:none;
-z-index:999;
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
+  radial-gradient(ellipse at 30% 20%, rgba(210,180,120,0.12) 0%, transparent 60%),
+  radial-gradient(ellipse at 75% 80%, rgba(160,100,50,0.08) 0%, transparent 50%);
 }
 
-/* ── ENTRANCE ── */
-@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fi{from{opacity:0}to{opacity:1}}
-.afu{animation:fu .55s ease-out both}
+/* ── INK BLEED SHADOW ── */
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.afu{animation:fu .6s ease-out both}
+
+/* ── TYPOGRAPHY ── */
+h1,h2,h3,.nl,.section-title{font-family:Uncial Antiqua,serif}
+.nl{font-size:1.15rem;font-weight:400;color:var(--gold);
+  text-shadow:1px 1px 2px rgba(160,112,32,0.3);letter-spacing:.08em}
+h1{font-size:2.4rem;font-weight:400;color:var(--ink);letter-spacing:.05em;
+  text-shadow:2px 2px 4px rgba(42,24,8,0.15)}
+h2{font-size:1.6rem;font-weight:400;color:var(--ink)}
+h3{font-size:1.2rem;font-weight:400;color:var(--ink-light)}
+
+/* ── ORNAMENTAL DROP CAP ── */
+.drop-cap::first-letter{
+font-family:Uncial Antiqua,serif;
+font-size:4em;
+float:left;
+line-height:.75;
+margin:.05em .08em 0 0;
+color:var(--gold);
+text-shadow:2px 2px 0 var(--card-border), 3px 3px 6px rgba(42,24,8,0.2)
+}
+
+/* ── ORNAMENTAL DIVIDER ── */
+.orn-divider{
+text-align:center;
+margin:2.2rem 0;
+color:var(--gold);
+font-size:1.1rem;
+letter-spacing:.4em;
+position:relative;
+display:flex;
+align-items:center;
+gap:.8rem
+}
+.orn-divider::before,.orn-divider::after{
+content:'';flex:1;height:1px;
+background:linear-gradient(90deg,transparent,var(--card-border),transparent)
+}
 
 /* ── NAV ── */
-.n{background:var(--card);border-bottom:2px solid var(--gold);padding:.9rem 2rem;
-  box-shadow:0 2px 12px var(--shadow)}
-.ni{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
-.nl{font-family:Cinzel,serif;font-size:1.1rem;font-weight:700;color:var(--gold);text-decoration:none;
-  letter-spacing:.12em;text-shadow:0 1px 0 rgba(160,112,32,0.2)}
-.links{display:flex;gap:2rem;list-style:none}
-.links a{font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--ink-light);text-decoration:none;padding-bottom:2px;
+.n{background:var(--card);border-bottom:2px solid var(--gold);
+  padding:.9rem 2rem;box-shadow:0 3px 12px var(--shadow)}
+.ni{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+.links{display:flex;gap:2.2rem;list-style:none}
+.links a{font-family:Uncial Antiqua,serif;font-size:.8rem;
+  color:var(--ink-light);text-decoration:none;
+  letter-spacing:.12em;padding-bottom:2px;
   border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
 .links a:hover,.links a.active{color:var(--gold);border-bottom-color:var(--gold)}
 
-/* ── DIVIDER ── */
-.sd{display:flex;align-items:center;gap:1.2rem;margin:2.5rem 0 1.5rem}
-.dl{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--card-border))}
-.dt{font-family:Cinzel,serif;font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
-.do{color:var(--gold);font-size:.72rem}
+/* ── CARDS (WORN PARCHMENT) ── */
+.card{background:var(--card);border:1px solid var(--card-border);
+  position:relative;
+  box-shadow:4px 4px 0 var(--card-border),6px 6px 0 rgba(42,24,8,0.08);
+  /* corner wear */
+  outline:1px solid transparent;
+  outline-offset:-1px;
+  background-image:
+    linear-gradient(135deg,rgba(42,24,8,0.04) 0%,transparent 40%),
+    linear-gradient(315deg,rgba(42,24,8,0.03) 0%,transparent 30%)
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--card-border),var(--gold),var(--card-border))}
+.card::after{
+content:'';position:absolute;bottom:0;right:0;
+width:20px;height:20px;
+border-right:2px solid var(--card-border);
+border-bottom:2px solid var(--card-border);
+background:linear-gradient(135deg,transparent 50%,rgba(42,24,8,0.06) 50%)
+}
+.cp{padding:1.8rem 2rem}
 
-/* ── CARDS ── */
-.card{background:var(--card);border:1px solid var(--card-border);position:relative;
-  box-shadow:2px 2px 0 var(--card-border)}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--gold);opacity:.5}
-.cp{padding:1.5rem}
-.item-title{font-family:Cinzel,serif;font-size:1.3rem;font-weight:700;color:var(--ink);letter-spacing:.05em}
-.price-tag{font-family:Cinzel,serif;font-size:1.5rem;font-weight:700;color:var(--gold);letter-spacing:.08em}
-.tag{display:inline-block;font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.12em;
-  text-transform:uppercase;background:var(--gold-pale);color:var(--gold);padding:2px 7px;margin-right:.3rem;
-  border:1px solid rgba(160,112,32,0.3)}
-.tag.overseas{background:#e8dff4;color:#6030a0;border-color:rgba(96,48,160,0.3)}
-.tag.wine{background:#f8e8ea;color:var(--wine);border-color:rgba(122,24,40,0.3)}
+/* ── BUTTONS (WAX SEAL FEEL) ── */
+.btn-p{
+display:inline-block;
+font-family:Uncial Antiqua,serif;font-size:.82rem;letter-spacing:.15em;
+background:var(--gold);color:#fff;border:none;
+padding:.75rem 2rem;text-decoration:none;
+box-shadow:3px 3px 0 var(--card-border),4px 4px 0 rgba(42,24,8,0.1);
+transition:background .2s,transform .15s,box-shadow .2s;
+text-shadow:1px 1px 0 rgba(42,24,8,0.3)
+}
+.btn-p:hover{background:#b08028;transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--card-border)}
+.btn-o{
+display:inline-block;
+font-family:Uncial Antiqua,serif;font-size:.82rem;letter-spacing:.15em;
+background:transparent;color:var(--gold);border:2px solid var(--gold);
+padding:.75rem 2rem;text-decoration:none;
+box-shadow:3px 3px 0 var(--card-border);
+transition:background .2s,color .2s,transform .15s,box-shadow .2s
+}
+.btn-o:hover{background:var(--gold);color:#fff;transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--card-border)}
+.btn-w{
+display:inline-block;
+font-family:Uncial Antiqua,serif;font-size:.82rem;letter-spacing:.15em;
+background:var(--wine);color:#fff;border:none;
+padding:.75rem 2rem;text-decoration:none;
+box-shadow:3px 3px 0 rgba(122,24,40,0.4),4px 4px 0 rgba(42,24,8,0.1);
+transition:background .2s,transform .15s,box-shadow .2s
+}
+.btn-w:hover{background:#8a2030;transform:translate(-2px,-2px);box-shadow:5px 5px 0 rgba(122,24,40,0.4)}
 
-/* ── BUTTONS ── */
-.btn-p{display:inline-block;font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.2em;
-  text-transform:uppercase;background:var(--gold);color:#fff;border:none;
-  padding:.75rem 1.8rem;text-decoration:none;transition:background .2s,transform .15s,box-shadow .2s;
-  box-shadow:2px 2px 0 var(--card-border)}
-.btn-p:hover{background:var(--gold-light);transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--card-border)}
-.btn-o{display:inline-block;font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.2em;
-  text-transform:uppercase;background:transparent;color:var(--gold);
-  border:1.5px solid var(--gold);padding:.75rem 1.8rem;text-decoration:none;
-  transition:background .2s,color .2s,transform .15s,box-shadow .2s;
-  box-shadow:2px 2px 0 var(--card-border)}
-.btn-o:hover{background:var(--gold);color:#fff;transform:translate(-1px,-1px);box-shadow:3px 3px 0 var(--card-border)}
-.btn-w{display:inline-block;font-family:Cinzel,serif;font-size:.72rem;letter-spacing:.2em;
-  text-transform:uppercase;background:var(--wine);color:#fff;border:none;
-  padding:.75rem 1.8rem;text-decoration:none;transition:background .2s,transform .15s,box-shadow .2s;
-  box-shadow:2px 2px 0 rgba(122,24,40,0.4)}
-.btn-w:hover{background:var(--wine-light);transform:translate(-1px,-1px);box-shadow:3px 3px 0 rgba(122,24,40,0.4)}
+/* ── TAGS ── */
+.tag{
+display:inline-block;font-family:Uncial Antiqua,serif;font-size:.65rem;
+letter-spacing:.12em;background:var(--gold-pale);color:var(--gold);
+padding:2px 8px;border:1px solid rgba(160,112,32,0.3);margin-right:.4rem}
+.tag.overseas{background:#ece0ff;color:#6030a0;border-color:rgba(96,48,160,0.3)}
+.tag.wine{background:var(--wine-pale);color:var(--wine);border-color:rgba(122,24,40,0.3)}
 
 /* ── FORMS ── */
-input,select,textarea{background:var(--bg-paper);border:1.5px solid var(--card-border);color:var(--ink);
-  padding:.6rem 1rem;font-family:Cormorant Garamond,serif;font-size:1rem;
-  outline:none;transition:border-color .2s;width:100%}
-input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none}
-input::placeholder,textarea::placeholder{color:var(--dim);font-style:italic}
-label{display:block;margin-bottom:.3rem;font-family:Cinzel,serif;font-size:.7rem;
-  letter-spacing:.12em;color:var(--ink-light)}
-.field{margin-bottom:1.2rem}
-hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
-.checkbox{display:flex;align-items:center;gap:.5rem;cursor:pointer}
+input,select,textarea{
+background:var(--bg);border:1.5px solid var(--card-border);
+color:var(--ink);padding:.7rem 1rem;
+font-family:Cormorant Garamond,serif;font-size:1rem;
+outline:none;transition:border-color .2s;width:100%;
+border-radius:2px;
+box-shadow:inset 2px 2px 4px rgba(42,24,8,0.06)
+}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none;box-shadow:none}
+input::placeholder,textarea::placeholder{color:var(--ink-faint);font-style:italic;font-size:.95rem}
+label{display:block;margin-bottom:.4rem;font-family:Uncial Antiqua,serif;
+  font-size:.75rem;letter-spacing:.12em;color:var(--ink-light)}
+.field{margin-bottom:1.4rem}
+hr{border:none;border-top:1px solid var(--card-border);margin:1.8rem 0}
+.checkbox{display:flex;align-items:center;gap:.6rem;cursor:pointer}
 .checkbox input{width:auto}
 .checkbox span{font-family:Cormorant Garamond,serif;color:var(--ink-light);font-size:.95rem}
 
 /* ── GRID ── */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:1.2rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:1.4rem}
 .ic{background:var(--card);border:1px solid var(--card-border);text-decoration:none;display:block;
-  transition:box-shadow .25s,transform .25s,border-color .25s;
-  box-shadow:3px 3px 0 var(--card-border)}
-.ic:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--card-border);border-color:var(--gold)}
-.iw{width:100%;height:150px;overflow:hidden;background:#d8c8a8}
+  box-shadow:4px 4px 0 var(--card-border),6px 6px 0 rgba(42,24,8,0.08);
+  transition:transform .25s,box-shadow .25s,border-color .25s}
+.ic:hover{transform:translate(-3px,-3px);box-shadow:7px 7px 0 var(--card-border),9px 9px 0 rgba(42,24,8,0.1);border-color:var(--gold)}
+.iw{width:100%;height:155px;overflow:hidden;background:var(--bg-deep)}
 .iw img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
-.ic:hover .iw img{transform:scale(1.06)}
-.ip{width:100%;height:150px;background:#d8c8a8;display:flex;align-items:center;
-  justify-content:center;font-size:2rem;color:var(--card-border);font-family:Cinzel,serif}
-.ib{padding:.8rem}
-.it{font-family:Cinzel,serif;font-size:.82rem;font-weight:700;color:var(--ink);
-  letter-spacing:.04em;margin-bottom:.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ip2{font-family:Cinzel,serif;font-size:1rem;font-weight:700;color:var(--gold)}
+.ic:hover .iw img{transform:scale(1.07)}
+.ip{width:100%;height:155px;background:var(--bg-deep);display:flex;align-items:center;
+  justify-content:center;font-size:2.5rem;color:var(--card-border);font-family:Uncial Antiqua,serif}
+.ib{padding:1rem}
+.it{font-family:Uncial Antiqua,serif;font-size:.82rem;color:var(--ink);
+  letter-spacing:.05em;margin-bottom:.4rem;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ip2{font-family:Uncial Antiqua,serif;font-size:1.05rem;color:var(--gold)}
 
 /* ── LOGIN ── */
 .center{text-align:center;display:flex;flex-direction:column;align-items:center;
   justify-content:center;min-height:calc(100vh - 80px);padding:2rem}
-.login-box{background:var(--card);border:1px solid var(--card-border);padding:2.5rem;
-  width:100%;max-width:420px;box-shadow:4px 4px 0 var(--card-border);position:relative}
-.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gold)}
+.login-box{background:var(--card);border:1px solid var(--card-border);padding:2.8rem;
+  width:100%;max-width:420px;
+  box-shadow:5px 5px 0 var(--card-border),7px 7px 0 rgba(42,24,8,0.1);
+  position:relative}
+.login-box::before{
+content:'';position:absolute;top:0;left:0;right:0;height:4px;
+background:linear-gradient(90deg,var(--card-border),var(--gold),var(--card-border))}
+.login-box::after{
+content:'';position:absolute;bottom:0;right:0;
+width:24px;height:24px;
+border-right:2px solid var(--card-border);border-bottom:2px solid var(--card-border);
+background:linear-gradient(135deg,transparent 50%,rgba(42,24,8,0.05) 50%)}
 
 /* ── MISC ── */
-.flash{padding:.8rem 1.2rem;border-left:3px solid var(--gold);background:var(--gold-pale);
-  color:var(--gold);font-family:Cormorant Garamond,serif;font-style:italic;margin-bottom:1.5rem;
-  animation:fu .4s ease-out}
-.empty{text-align:center;padding:3rem;color:var(--dim);border:1px dashed var(--card-border);
-  font-family:Cormorant Garamond,serif;font-style:italic;font-size:1rem;background:var(--card)}
-.wish-card{background:var(--card);border:1px solid var(--card-border);padding:.8rem 1rem;
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;
-  border-left:3px solid var(--wine);box-shadow:2px 2px 0 var(--card-border);
+.flash{padding:.8rem 1.2rem;border-left:3px solid var(--gold);
+  background:var(--gold-pale);color:var(--gold);
+  font-family:Cormorant Garamond,serif;font-style:italic;margin-bottom:1.5rem}
+.empty{text-align:center;padding:3rem;color:var(--dim);
+  border:1px dashed var(--card-border);font-family:Cormorant Garamond,serif;
+  font-style:italic;font-size:1.05rem;background:var(--card)}
+.wish-card{background:var(--card);border:1px solid var(--card-border);
+  padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:.7rem;border-left:4px solid var(--wine);
+  box-shadow:3px 3px 0 var(--card-border);
   transition:border-color .2s,box-shadow .2s}
-.wish-card:hover{border-left-color:var(--gold);box-shadow:3px 3px 0 var(--card-border)}
-.wn{font-family:Cormorant Garamond,serif;font-size:1rem;color:var(--ink);font-style:italic}
-.wp{font-family:Cinzel,serif;font-size:.82rem;color:var(--dim);letter-spacing:.05em}
-.meta{font-family:Cormorant Garamond,serif;font-size:.9rem;color:var(--dim);margin-top:.8rem;
-  font-style:italic;border-top:1px solid var(--card-border);padding-top:.8rem}
-.status{font-family:Cinzel,serif;font-size:.82rem;letter-spacing:.05em;margin-top:.4rem}
+.wish-card:hover{border-left-color:var(--gold);box-shadow:4px 4px 0 var(--card-border)}
+.wn{font-family:Cormorant Garamond,serif;font-size:1.05rem;color:var(--ink);font-style:italic}
+.wp{font-family:Uncial Antiqua,serif;font-size:.8rem;color:var(--dim);letter-spacing:.05em}
+.meta{font-family:Cormorant Garamond,serif;font-size:.9rem;color:var(--dim);
+  margin-top:.8rem;font-style:italic;border-top:1px solid var(--card-border);padding-top:.8rem}
+.status{font-family:Uncial Antiqua,serif;font-size:.8rem;letter-spacing:.05em;margin-top:.4rem}
 .status.y{color:#a07020}.status.b{color:#3a6090}.status.g{color:var(--green)}
-.overseas-note{background:#f0ecff;border-left:3px solid #6030a0;padding:1rem 1.2rem;
-  margin:1.2rem 0;font-style:italic;color:#5030a0;font-size:.95rem}
+.overseas-note{background:#f0ecff;border-left:3px solid #6030a0;
+  padding:1rem 1.3rem;margin:1.3rem 0;font-style:italic;color:#5030a0;font-size:.95rem}
 .ft{margin-top:5rem;padding:2.5rem 2rem;border-top:2px solid var(--gold);text-align:center}
 .ft p{font-family:Cormorant Garamond,serif;font-size:.85rem;color:var(--dim);font-style:italic}
-.section-title{font-family:Cinzel,serif;font-size:.85rem;font-weight:700;color:var(--ink);
-  letter-spacing:.1em;margin-bottom:1.5rem;border-bottom:1px solid var(--card-border);padding-bottom:.5rem}
-.deposit-box{background:var(--gold-pale);border:1.5px solid var(--gold);padding:1.2rem;text-align:center;margin:1.5rem 0}
-.deposit-price{font-family:Cinzel,serif;font-size:2.5rem;font-weight:700;color:var(--gold)}
-@media(max-width:640px){.links{gap:1rem}.links a{font-size:.65rem;letter-spacing:.1em}
-  .grid{grid-template-columns:repeat(2,1fr);gap:.8rem}}
+.section-title{font-family:Uncial Antiqua,serif;font-size:.85rem;font-weight:400;
+  color:var(--ink);letter-spacing:.1em;margin-bottom:1.5rem;
+  border-bottom:1px solid var(--card-border);padding-bottom:.5rem}
+.deposit-box{background:var(--gold-pale);border:1.5px solid var(--gold);
+  padding:1.3rem;text-align:center;margin:1.5rem 0}
+.deposit-price{font-family:Uncial Antiqua,serif;font-size:2.5rem;color:var(--gold)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  .links{gap:1.2rem}
+  .links a{font-size:.72rem;letter-spacing:.08em}
+  .grid{grid-template-columns:repeat(2,1fr);gap:.9rem}
+  h1{font-size:1.8rem}
+}
 ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px}
 
 </style>
@@ -170,16 +247,15 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
   </div>
 </nav>
 
-<main style="max-width:650px;margin:0 auto;padding:0 2rem 3rem;">
-  <div class="sd afu"><div class="dl"></div><span class="dt">上架</span><span class="do">&#10022;</span><span class="dt">List Item</span><div class="dl"></div></div>
-  <p style="color:var(--dim);font-family:Cormorant Garamond,serif;font-style:italic;margin-bottom:1.5rem;" class="afu">填完申請後，湯姆會審核，通過才會公開顯示。</p>
+<main style="max-width:660px;margin:0 auto;padding:0 2rem 3rem;">
+  <div class="orn-divider afu">&#10022;</div>
+  <p style="color:var(--dim);font-family:Cormorant Garamond,serif;font-style:italic;margin-bottom:1.8rem;font-size:1.05rem;" class="afu">填完申請後，湯姆會審核，通過才會公開顯示。</p>
   <form method="post" enctype="multipart/form-data" class="card cp">
     <div class="field"><label>商品名稱 *</label><input name="title" required placeholder="例：泡棉長劍 90cm"></div>
     <div class="field"><label>商品描述</label><textarea name="description" rows="4" placeholder="說明規格、狀態、適用場合…"></textarea></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
       <div class="field"><label>價格 (TWD) *</label><input name="price" type="number" required min="1" placeholder="例：1500"></div>
-      <div class="field">
-        <label>類別 *</label>
+      <div class="field"><label>類別 *</label>
         <select name="category" required>
           <option value="weapon">武器</option><option value="armor">盔甲</option><option value="prop">道具</option><option value="accessory">配件</option>
         </select>
@@ -191,7 +267,7 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
     <div class="field"><label class="checkbox"><input type="checkbox" name="is_overseas"><span>&#127757; 這是海外商品（大陸/日本）</span></label></div>
     <div class="field"><label>商品圖片</label><input type="file" name="image" accept="image/*"></div>
     <hr>
-    <p style="color:var(--ink-light);font-family:Cinzel,serif;font-size:.68rem;letter-spacing:.08em;margin-bottom:1rem;">以下資訊僅湯姆可見</p>
+    <p style="color:var(--ink-light);font-family:Uncial Antiqua,serif;font-size:.7rem;letter-spacing:.08em;margin-bottom:1rem;">以下資訊僅湯姆可見</p>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
       <div class="field"><label>你的名字 *</label><input name="seller_name" required></div>
       <div class="field"><label>聯絡電話 *</label><input name="seller_phone" required></div>
