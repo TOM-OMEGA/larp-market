@@ -94,6 +94,11 @@ def init_db():
         created_at TEXT NOT NULL
     );
 
+    CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    );
+
     CREATE TABLE IF NOT EXISTS transactions (
         id TEXT PRIMARY KEY,
         item_id TEXT NOT NULL,
@@ -141,6 +146,17 @@ def uploaded_file(filename):
     return send_from_directory(UPLOAD_DIR, filename)
 
 
+def get_setting(key, default=""):
+    db = get_db()
+    row = db.execute("SELECT value FROM settings WHERE key=?", (key,)).fetchone()
+    return row["value"] if row else default
+
+def set_setting(key, value):
+    db = get_db()
+    db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)", (key, value))
+    db.commit()
+
+
 def discord_notify(msg):
     if not DISCORD_WEBHOOK:
         return
@@ -167,7 +183,10 @@ def home():
 def market():
     db = get_db()
     category = request.args.get("category", "")
+    condition = request.args.get("condition", "")
     is_overseas = request.args.get("overseas")
+    min_price = request.args.get("min_price", "")
+    max_price = request.args.get("max_price", "")
     q = request.args.get("q", "")
 
     query = "SELECT * FROM items WHERE status='approved'"
@@ -175,10 +194,19 @@ def market():
     if category:
         query += " AND category=? "
         params.append(category)
+    if condition:
+        query += " AND condition=? "
+        params.append(condition)
     if is_overseas == "1":
         query += " AND is_overseas=1"
     elif is_overseas == "0":
         query += " AND is_overseas=0"
+    if min_price:
+        query += " AND price>=?"
+        params.append(int(min_price))
+    if max_price:
+        query += " AND price<=?"
+        params.append(int(max_price))
     if q:
         query += " AND (title LIKE ? OR description LIKE ?)"
         params.extend([f"%{q}%", f"%{q}%"])
@@ -186,7 +214,8 @@ def market():
 
     items = db.execute(query, params).fetchall()
     return render_template("market.html", items=items, category=category, q=q,
-                           is_overseas=is_overseas)
+                           is_overseas=is_overseas, condition=condition,
+                           min_price=min_price, max_price=max_price)
 
 
 @app.route("/item/<item_id>")
@@ -210,7 +239,17 @@ def wishlist():
 
 @app.route("/about")
 def about():
-    return render_template("about.html")
+    intro = get_setting("about_intro",
+        "LARP 二手市集是專為台灣 LARP 玩家成立的道具交易平台。大眾化，不限定團體，歡迎所有玩家加入。")
+    commission = get_setting("about_commission",
+        "平台收取售價 10% 作為手續費。")
+    meetup = get_setting("about_meetup",
+        "每週三晚上，林森公園（台北市中山區）。夜貓聚會固定舉行，歡迎帶武器來交流。")
+    overseas = get_setting("about_overseas",
+        "我們也轉載海外的二手盔甲。標示「海外」的商品預計等待 2–4 週，屆時會發送通知。")
+    return render_template("about.html",
+        about_intro=intro, about_commission=commission,
+        about_meetup=meetup, about_overseas=overseas)
 
 
 # ── Routes: Submit ───────────────────────────────────────
@@ -500,6 +539,23 @@ def admin_wishes():
         "SELECT * FROM wishes ORDER BY created_at DESC"
     ).fetchall()
     return render_template("admin_wishes.html", wishes=wishes)
+
+
+@app.route("/admin/about", methods=["GET", "POST"])
+@admin_required
+def admin_about():
+    if request.method == "POST":
+        for key in ["about_intro", "about_commission", "about_meetup", "about_overseas"]:
+            val = request.form.get(key, "").strip()
+            set_setting(key, val)
+        flash("About 頁已更新", "success")
+        return redirect(url_for("admin_about"))
+    intro = get_setting("about_intro")
+    commission = get_setting("about_commission")
+    meetup = get_setting("about_meetup")
+    overseas = get_setting("about_overseas")
+    return render_template("admin_about.html",
+        intro=intro, commission=commission, meetup=meetup, overseas=overseas)
 
 
 @app.route("/admin/delete_wish/<wish_id>", methods=["POST"])

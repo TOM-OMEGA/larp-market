@@ -155,11 +155,22 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
       <option value="prop" {% if category=='prop' %}selected{% endif %}>道具</option>
       <option value="accessory" {% if category=='accessory' %}selected{% endif %}>配件</option>
     </select>
+    <select name="condition" onchange="this.form.submit()" style="width:auto;">
+      <option value="">新舊</option>
+      <option value="new" {% if condition=='new' %}selected{% endif %}>全新</option>
+      <option value="like_new" {% if condition=='like_new' %}selected{% endif %}>近全新</option>
+      <option value="used" {% if condition=='used' %}selected{% endif %}>二手</option>
+    </select>
     <select name="overseas" onchange="this.form.submit()" style="width:auto;">
       <option value="">全部</option>
       <option value="0" {% if is_overseas=='0' %}selected{% endif %}>台灣</option>
       <option value="1" {% if is_overseas=='1' %}selected{% endif %}>海外</option>
     </select>
+    <div style="display:flex;gap:.4rem;align-items:center;">
+      <input name="min_price" value="{{ min_price }}" placeholder="$最低" style="width:70px;text-align:center;">
+      <span style="color:var(--dim)">–</span>
+      <input name="max_price" value="{{ max_price }}" placeholder="$最高" style="width:70px;text-align:center;">
+    </div>
     <button type="submit" class="btn-o" style="padding:.5rem 1rem;">&#128269;</button>
     <a href="/list" class="btn-p" style="margin-left:auto;">+ 上架</a>
   </form>

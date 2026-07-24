@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>編輯 About - LARP 二手市集</title>
+<style>
+:root { --bg:#0a0e14; --bg2:#111820; --iron:#8a95a5; --amber:#c8a84e; --text:#d0ddd5; --border:#2a3545; --red:#c0392b; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; min-height: 100vh; }
+.navbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+.navbar a { color: var(--amber); text-decoration: none; font-weight: bold; font-size: 0.9rem; }
+.navbar a:hover { text-decoration: underline; }
+.navbar .brand { color: var(--amber); font-weight: bold; margin-right: auto; }
+h1 { color: var(--amber); padding: 2rem 2rem 0; font-size: 1.4rem; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin: 1.5rem 2rem; padding: 1.5rem; }
+.card h2 { color: var(--amber); font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+label { display: block; color: var(--iron); font-size: 0.8rem; margin-bottom: 0.3rem; font-weight: bold; }
+textarea { width: 100%; min-height: 80px; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 0.7rem; border-radius: 4px; font-family: inherit; font-size: 0.95rem; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--amber); }
+.field { margin-bottom: 1.2rem; }
+.btn { display: inline-block; background: var(--amber); color: #000; padding: 0.6rem 1.5rem; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
+.btn:hover { opacity: 0.9; }
+.flash { background: #1a3a1a; color: #6f9; padding: 0.8rem 2rem; border-bottom: 1px solid #2a5a2a; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <span class="brand">LARP 二手市集</span>
+  <a href="/admin">商品管理</a>
+  <a href="/admin/about">編輯 About</a>
+  <a href="/admin/wishes">許願管理</a>
+  <a href="/">回前台</a>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cat, msg in messages %}
+<div class="flash">{{ msg }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<h1>編輯 About 頁</h1>
+
+<form method="post">
+  <div class="card">
+    <h2>// 我們是誰</h2>
+    <div class="field">
+      <label>自我介紹</label>
+      <textarea name="about_intro">{{ intro }}</textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>// 手續費說明</h2>
+    <div class="field">
+      <label>手續費</label>
+      <textarea name="about_commission">{{ commission }}</textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>// 面交地點</h2>
+    <div class="field">
+      <label>面交說明</label>
+      <textarea name="about_meetup">{{ meetup }}</textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>// 海外商品</h2>
+    <div class="field">
+      <label>海外說明</label>
+      <textarea name="about_overseas">{{ overseas }}</textarea>
+    </div>
+  </div>
+
+  <div style="padding: 0 2rem 2rem;">
+    <button type="submit" class="btn">💾 儲存</button>
+  </div>
+</form>
+</body>
+</html>
