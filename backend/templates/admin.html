@@ -9,8 +9,8 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; min-height: 100vh; }
 .navbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
-.navbar a { color: var(--iron); text-decoration: none; font-size: 0.9rem; padding: 4px 14px; border-radius: 6px; transition: background 0.15s, color 0.15s; }
-.navbar a:hover { background: #1f2530; color: var(--text); }
+.navbar a { color: var(--amber); text-decoration: none; font-weight: bold; font-size: 0.9rem; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
+.navbar a:hover { background: #1f2530; text-decoration: none; }
 .navbar a.active { background: #1a3020; color: var(--amber); }
 .navbar .brand { color: var(--amber); font-weight: bold; margin-right: auto; font-size: 1rem; }
 h1 { color: var(--amber); padding: 2rem 2rem 0; font-size: 1.4rem; }
@@ -56,7 +56,7 @@ input::placeholder { color: var(--iron); }
   <a href="/admin?tab=active" {% if tab=='active' %}class="active"{% endif %}>進行中</a>
   <a href="/admin?tab=wishes" {% if tab=='wishes' %}class="active"{% endif %}>許願</a>
   <a href="/admin/about">編輯 About</a>
-  <a href="/" style="color: var(--iron);">回前台</a>
+  <a href="/" style="color: var(--amber);">回前台</a>
   <a href="/logout" style="color: #f88;">登出</a>
 </nav>
 
