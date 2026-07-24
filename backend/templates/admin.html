@@ -4,157 +4,163 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>管理後台 - LARP 二手市集</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&family=Oswald:wght@400;600;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#0f1114; --bg-card:#16191f; --border:#2a2f38; --amber:#c8a84e; --olive:#4a5c3e; --olive-light:#6b7d58; --text:#d4cfc4; --iron:#8a95a5; }
-  body { background: var(--bg); color: var(--text); font-family:'Noto Sans TC',sans-serif; }
-  .title,.amber,h1,h2 { color: var(--amber); font-family: 'Cinzel', serif; }
-  .btn-primary { background: var(--olive); color: #fff; border: 1px solid var(--olive-light); }
-  .btn-primary:hover { background: #5a6c4e; }
-  .card { background: var(--bg-card); border: 1px solid var(--border); }
-  input,select { background: #0a0c0f; border: 1px solid var(--border); color: var(--text); padding: 6px 12px; }
-  input:focus,select:focus { outline: none; border-color: var(--olive); }
-  .tab-link { padding: 6px 16px; border-radius: 6px; font-size: 0.85rem; transition: background 0.15s; }
-  .tab-link:hover { background: #1f2530; }
-  .tab-link.active { background: var(--olive); color: #fff; }
+:root { --bg:#0a0e14; --bg2:#111820; --iron:#8a95a5; --amber:#c8a84e; --text:#d0ddd5; --border:#2a3545; --red:#c0392b; --green:#27ae60; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; min-height: 100vh; }
+.navbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; align-items: center; gap: 1.5rem; }
+.navbar a { color: var(--iron); text-decoration: none; font-size: 0.9rem; padding: 4px 14px; border-radius: 6px; transition: background 0.15s, color 0.15s; }
+.navbar a:hover { background: #1f2530; color: var(--text); }
+.navbar a.active { background: #1a3020; color: var(--amber); }
+.navbar .brand { color: var(--amber); font-weight: bold; margin-right: auto; font-size: 1rem; }
+h1 { color: var(--amber); padding: 2rem 2rem 0; font-size: 1.4rem; }
+h2 { color: var(--amber); font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; margin: 1rem 2rem 1.5rem; padding: 1.5rem; }
+.card-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 0.3rem; }
+.card-sub { color: var(--iron); font-size: 0.85rem; }
+.card-price { color: var(--amber); font-weight: bold; font-size: 1.2rem; text-align: right; }
+.card-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.card-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.btn { display: inline-block; padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; text-decoration: none; }
+.btn:hover { opacity: 0.85; }
+.btn-approve { background: #2a5a2a; color: #8f8; }
+.btn-reject { background: #5a2a2a; color: #f88; }
+.btn-green { background: #1a5a2a; color: #8f8; }
+.btn-blue { background: #1a2a5a; color: #8cf; }
+.btn-red { background: #5a1a1a; color: #f88; }
+.btn-gray { background: #2a2a3a; color: #aaa; }
+.btn-full { width: 100%; text-align: center; }
+input, select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; }
+input:focus, select:focus { outline: none; border-color: var(--amber); }
+input::placeholder { color: var(--iron); }
+.flash { background: #1a3a1a; color: #6f9; padding: 0.8rem 2rem; border-bottom: 1px solid #2a5a2a; }
+.badge { display: inline-block; font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; }
+.badge-overseas { background: #1a2a5a; color: #8cf; }
+.empty { text-align: center; padding: 3rem; color: var(--iron); }
+.img-thumb { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; }
+.desc { color: var(--iron); font-size: 0.85rem; margin-bottom: 0.5rem; }
+.wish-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+.wish-info { flex: 1; }
+.wish-contact { text-align: right; font-size: 0.85rem; color: var(--iron); }
+.wish-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 0.3rem; }
+.wish-desc { color: var(--iron); font-size: 0.85rem; }
+.wish-price { color: var(--amber); font-size: 0.85rem; margin-top: 0.2rem; }
+.wish-meta { font-size: 0.75rem; color: var(--iron); margin-top: 0.5rem; }
+.inline-form { display: inline; }
 </style>
 </head>
-<body class="min-h-screen">
-
-<nav class="border-b border-amber/30 bg-[#0d0b08] px-6 py-4 flex items-center justify-between">
-  <a href="/" class="title text-xl font-bold amber">⚔ LARP 二手市集</a>
-  <div class="flex gap-4 text-sm text-iron">
-    <a href="/admin?tab=pending" class="tab-link {% if tab=='pending' %}active{% endif %}">待審核</a>
-    <a href="/admin?tab=active" class="tab-link {% if tab=='active' %}active{% endif %}">進行中</a>
-    <a href="/admin?tab=wishes" class="tab-link {% if tab=='wishes' %}active{% endif %}">許願</a>
-    <a href="/admin/about" class="tab-link hover:text-amber">編輯 About</a>
-    <a href="/logout" class="tab-link hover:text-red-400">登出</a>
-  </div>
+<body>
+<nav class="navbar">
+  <span class="brand">⚔ LARP 二手市集</span>
+  <a href="/admin?tab=pending" {% if tab=='pending' %}class="active"{% endif %}>待審核</a>
+  <a href="/admin?tab=active" {% if tab=='active' %}class="active"{% endif %}>進行中</a>
+  <a href="/admin?tab=wishes" {% if tab=='wishes' %}class="active"{% endif %}>許願</a>
+  <a href="/admin/about">編輯 About</a>
+  <a href="/" style="color: var(--iron);">回前台</a>
+  <a href="/logout" style="color: #f88;">登出</a>
 </nav>
 
-<main class="max-w-4xl mx-auto p-6">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-  {% for cat, msg in messages %}
-  <div class="mb-4 px-4 py-3 rounded bg-green-900/60 text-green-200 text-sm">{{ msg }}</div>
-  {% endfor %}
-  {% endwith %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for cat, msg in messages %}
+<div class="flash">{{ msg }}</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
 
-  <!-- ── 待審核 ── -->
-  {% if tab == 'pending' %}
-  <h1 class="text-2xl font-bold amber mb-6">待審核上架</h1>
-  {% if pending %}
-  <div class="space-y-4 mb-8">
-    {% for item in pending %}
-    <div class="card rounded-lg p-5">
-      <div class="flex justify-between items-start mb-3">
-        <div>
-          <div class="font-bold text-lg">{{ item.title }}</div>
-          <div class="text-iron text-sm">{{ item.seller_name }} · {{ item.seller_phone }}</div>
-          {% if item.seller_email %}<div class="text-iron text-xs">{{ item.seller_email }}</div>{% endif %}
-        </div>
-        <div class="text-right">
-          <div class="amber font-bold text-xl">${{ item.price }}</div>
-          {% if item.is_overseas %}<span class="text-xs bg-blue-900 text-blue-300 px-2 py-0.5 rounded">海外</span>{% endif %}
-        </div>
-      </div>
-      {% if item.description %}<p class="text-iron text-sm mb-3">{{ item.description }}</p>{% endif %}
-      {% if item.image_path %}<img src="{{ item.image_path }}" class="w-32 h-24 object-cover rounded mb-3">{% endif %}
-      <div class="flex gap-2">
-        <form action="/admin/approve/{{ item.id }}" method="post" class="flex-1">
-          <button class="btn-primary w-full py-2 rounded text-sm font-bold">✅ 核准</button>
-        </form>
-        <form action="/admin/reject/{{ item.id }}" method="post" class="flex-1">
-          <button class="bg-red-900 hover:bg-red-800 text-red-200 w-full py-2 rounded text-sm font-bold">❌ 駁回</button>
-        </form>
-        <form action="/admin/delete/{{ item.id }}" method="post" onsubmit="return confirm('確定刪除？')">
-          <button class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-2 rounded text-sm">🗑</button>
-        </form>
+<!-- ── 待審核 ── -->
+{% if tab == 'pending' %}
+<h1>待審核上架</h1>
+{% if pending %}
+{% for item in pending %}
+<div class="card">
+  <div class="card-row">
+    <div>
+      <div class="card-title">{{ item.title }}</div>
+      <div class="card-sub">{{ item.seller_name }} · {{ item.seller_phone }}</div>
+      {% if item.seller_email %}<div class="card-sub" style="font-size:0.75rem;">{{ item.seller_email }}</div>{% endif %}
+    </div>
+    <div>
+      <div class="card-price">${{ item.price }}</div>
+      {% if item.is_overseas %}<span class="badge badge-overseas">海外</span>{% endif %}
+    </div>
+  </div>
+  {% if item.description %}<p class="desc">{{ item.description }}</p>{% endif %}
+  {% if item.image_path %}<img src="{{ item.image_path }}" class="img-thumb" style="margin-bottom:0.8rem;">{% endif %}
+  <div class="card-actions">
+    <form action="/admin/approve/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-approve">✅ 核准</button></form>
+    <form action="/admin/reject/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-reject">❌ 駁回</button></form>
+    <form action="/admin/delete/{{ item.id }}" method="post" class="inline-form" onsubmit="return confirm('確定刪除？')"><button class="btn btn-gray">🗑</button></form>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="empty">沒有待審核。</p>
+{% endif %}
+
+<!-- ── 進行中 ── -->
+{% elif tab == 'active' %}
+<h1>進行中商品</h1>
+{% if active %}
+{% for item in active %}
+<div class="card">
+  <div class="card-row">
+    <div style="display:flex;gap:1rem;align-items:center;">
+      {% if item.image_path %}<img src="{{ item.image_path }}" class="img-thumb">{% endif %}
+      <div>
+        <div class="card-title">{{ item.title }}</div>
+        <div class="card-sub">${{ item.price }} · {{ item.status }}</div>
       </div>
     </div>
-    {% endfor %}
   </div>
-  {% else %}
-  <p class="text-iron text-center py-8">沒有待審核。</p>
-  {% endif %}
+  <div class="card-actions">
+    {% if item.status == 'deposit_paid' %}
+    <form action="/admin/ship/{{ item.id }}" method="post" style="display:flex;gap:0.4rem;align-items:center;">
+      <input name="tracking_number" placeholder="追蹤單號" style="width:120px;">
+      <button class="btn btn-blue">📮 已寄出</button>
+    </form>
+    {% elif item.status == 'shipped' %}
+    <form action="/admin/confirm/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-green">✔ 已確認</button></form>
+    {% elif item.status == 'confirmed' %}
+    <form action="/admin/close/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-green">💰 面交完成</button></form>
+    {% endif %}
+    <form action="/admin/cancel/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-red">✕</button></form>
+    <form action="/admin/delete/{{ item.id }}" method="post" class="inline-form" onsubmit="return confirm('確定刪除？')"><button class="btn btn-gray">🗑</button></form>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="empty">沒有進行中的交易。</p>
+{% endif %}
 
-  <!-- ── 進行中 ── -->
-  {% elif tab == 'active' %}
-  <h1 class="text-2xl font-bold amber mb-6">進行中商品</h1>
-  {% if active %}
-  <div class="space-y-3">
-    {% for item in active %}
-    <div class="card rounded-lg p-4 flex justify-between items-center">
-      <div class="flex gap-4 items-center">
-        {% if item.image_path %}<img src="{{ item.image_path }}" class="w-16 h-12 object-cover rounded">{% endif %}
-        <div>
-          <div class="font-bold">{{ item.title }}</div>
-          <div class="text-iron text-sm">${{ item.price }} · {{ item.status }}</div>
-        </div>
-      </div>
-      <div class="flex gap-2">
-        {% if item.status == 'deposit_paid' %}
-        <form action="/admin/ship/{{ item.id }}" method="post" class="flex gap-2">
-          <input name="tracking_number" placeholder="追蹤單號" class="w-32 text-sm">
-          <button class="bg-blue-900 hover:bg-blue-800 text-blue-200 px-3 py-1 rounded text-sm">📮 已寄出</button>
-        </form>
-        {% elif item.status == 'shipped' %}
-        <form action="/admin/confirm/{{ item.id }}" method="post">
-          <button class="bg-green-900 hover:bg-green-800 text-green-200 px-3 py-1 rounded text-sm">✔ 已確認</button>
-        </form>
-        {% elif item.status == 'confirmed' %}
-        <form action="/admin/close/{{ item.id }}" method="post">
-          <button class="bg-[#1a3020] border border-green-800 text-green-300 px-3 py-1 rounded text-sm">💰 面交完成</button>
-        </form>
-        {% endif %}
-        <form action="/admin/cancel/{{ item.id }}" method="post">
-          <button class="text-red-400 hover:text-red-300 px-3 py-1 rounded text-sm">✕</button>
-        </form>
-        <form action="/admin/delete/{{ item.id }}" method="post" onsubmit="return confirm('確定刪除？')">
-          <button class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded text-sm">🗑</button>
-        </form>
-      </div>
+<!-- ── 許願 ── -->
+{% elif tab == 'wishes' %}
+<h1>許願管理</h1>
+{% if wishes %}
+{% for wish in wishes %}
+<div class="card">
+  <div class="wish-row">
+    <div class="wish-info">
+      <div class="wish-title">{{ wish.title }}</div>
+      {% if wish.description %}<div class="wish-desc">{{ wish.description }}</div>{% endif %}
+      {% if wish.max_price %}<div class="wish-price">願付至 ${{ wish.max_price }}</div>{% endif %}
     </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <p class="text-iron text-center py-8">沒有進行中的交易。</p>
-  {% endif %}
-
-  <!-- ── 許願 ── -->
-  {% elif tab == 'wishes' %}
-  <h1 class="text-2xl font-bold amber mb-6">許願管理</h1>
-  {% if wishes %}
-  <div class="space-y-4">
-    {% for wish in wishes %}
-    <div class="card rounded-lg p-5">
-      <div class="flex justify-between items-start mb-2">
-        <div>
-          <div class="font-bold text-lg">{{ wish.title }}</div>
-          {% if wish.description %}<div class="text-iron text-sm">{{ wish.description }}</div>{% endif %}
-          {% if wish.max_price %}<div class="amber text-sm mt-1">願付至 ${{ wish.max_price }}</div>{% endif %}
-        </div>
-        <div class="text-right text-sm">
-          <div class="text-iron">{{ wish.contact_name }}</div>
-          <div class="text-iron">{{ wish.contact_phone }}</div>
-          {% if wish.contact_email %}<div class="text-iron text-xs">{{ wish.contact_email }}</div>{% endif %}
-        </div>
-      </div>
-      <div class="flex justify-between items-center">
-        <div class="text-xs text-iron">📅 {{ wish.created_at[:10] }} · {{ wish.status }}</div>
-        <form action="/admin/delete_wish/{{ wish.id }}" method="post" onsubmit="return confirm('確定刪除？')">
-          <button class="bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded text-sm">🗑 刪除</button>
-        </form>
-      </div>
+    <div class="wish-contact">
+      <div>{{ wish.contact_name }}</div>
+      <div>{{ wish.contact_phone }}</div>
+      {% if wish.contact_email %}<div style="font-size:0.75rem;">{{ wish.contact_email }}</div>{% endif %}
     </div>
-    {% endfor %}
   </div>
-  {% else %}
-  <p class="text-iron text-center py-8">沒有許願。</p>
-  {% endif %}
-  {% endif %}
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="wish-meta">📅 {{ wish.created_at[:10] }} · {{ wish.status }}</div>
+    <form action="/admin/delete_wish/{{ wish.id }}" method="post" onsubmit="return confirm('確定刪除？')"><button class="btn btn-gray">🗑 刪除</button></form>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="empty">沒有許願。</p>
+{% endif %}
+{% endif %}
 
-</main>
 </body>
 </html>
