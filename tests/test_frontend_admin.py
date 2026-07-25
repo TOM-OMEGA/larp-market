@@ -20,7 +20,7 @@ def client(tmp_path, monkeypatch):
         ) VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?, 'approved', ?, ?)
         """,
         (
-            "approved-item", "公開商品", "原描述", 1200, "armor", "used",
+            "approved-item", "公開商品", "第一段內容\n第二行\n\n第二段內容  含空白", 1200, "armor", "used",
             "賣家", "0900000000", "2026-01-01", "2026-01-01",
         ),
     )
@@ -59,6 +59,24 @@ def edit_data(token, **overrides):
     }
     data.update(overrides)
     return data
+
+
+def test_item_description_preserves_editor_whitespace(client):
+    test_client, _ = client
+    html = test_client.get("/item/approved-item").get_data(as_text=True)
+    assert 'class="item-description"' in html
+    assert "white-space:pre-wrap" in html
+    assert "overflow-wrap:anywhere" in html
+    assert "第一段內容\n第二行\n\n第二段內容  含空白" in html
+
+
+def test_item_numbers_use_readable_font(client):
+    test_client, _ = client
+    html = test_client.get("/item/approved-item").get_data(as_text=True)
+    assert 'class="item-price numeric"' in html
+    assert 'class="numeric" datetime="2026-01-01">2026-01-01</time>' in html
+    assert '.numeric{font-family:"Noto Sans TC"' in html
+    assert '.item-price{font-family:"Noto Sans TC"' in html
 
 
 def test_admin_controls_are_hidden_from_anonymous_users(client):

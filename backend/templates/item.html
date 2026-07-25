@@ -49,6 +49,21 @@ margin:.04em .1em 0 0;
 color:var(--gold);text-shadow:2px 2px 0 var(--gold-dark)
 }
 
+/* readable content and numbers */
+.item-description{
+font-family:"Noto Sans TC",sans-serif;
+font-size:1rem;
+line-height:1.9;
+white-space:pre-wrap;
+overflow-wrap:anywhere;
+color:var(--ink);
+margin:1.4rem 0;
+}
+.numeric{font-family:"Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums;letter-spacing:0}
+.item-price{font-family:"Noto Sans TC",sans-serif;font-size:2rem;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:0}
+.meta,.status{font-family:"Noto Sans TC",sans-serif}
+.admin-grid input[type="number"]{font-family:"Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums}
+
 /* nav */
 .n{background:var(--card);border-bottom:2px solid var(--gold);padding:.9rem 2rem;box-shadow:0 2px 10px var(--shadow)}
 .ni{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -187,11 +202,11 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
           <span class="tag">{{ item.condition }}</span>
         </div>
       </div>
-      <div style="font-family:Uncial Antiqua,serif;font-size:2rem;color:var(--gold);">${{ item.price }}</div>
+      <div class="item-price numeric">${{ item.price }}</div>
     </div>
 
     {% if item.description %}
-    <p class="drop-cap" style="color:var(--ink);line-height:2;margin:1.4rem 0;font-size:1.05rem;">{{ item.description }}</p>
+    <div class="item-description">{{ item.description }}</div>
     {% endif %}
 
     {% if item.is_overseas %}
@@ -199,7 +214,7 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
     {% endif %}
 
     <div class="meta">
-      <div>上架日期：{{ item.created_at[:10] }}</div>
+      <div>上架日期：<time class="numeric" datetime="{{ item.created_at[:10] }}">{{ item.created_at[:10] }}</time></div>
       {% if item.status == "deposit_paid" %}
       <div class="status y">&#128176; 已有買家下訂金，等待出貨</div>
       {% elif item.status == "shipped" %}
