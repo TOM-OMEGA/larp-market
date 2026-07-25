@@ -25,7 +25,14 @@ MAX_CONTENT_LEN = 10 * 1024 * 1024  # 10MB
 app = Flask(__name__, template_folder="templates",
             static_folder=STATIC_DIR, static_url_path="")
 
-app.secret_key = os.environ.get("SECRET_KEY", "larp-market-dev-key-2026")
+secret_key_path = os.path.join(BASE_DIR, ".secret_key")
+secret_key = os.environ.get("SECRET_KEY", "").strip()
+if not secret_key and os.path.exists(secret_key_path):
+    with open(secret_key_path, encoding="utf-8") as secret_file:
+        secret_key = secret_file.read().strip()
+if not secret_key:
+    raise RuntimeError("SECRET_KEY or backend/.secret_key is required")
+app.secret_key = secret_key
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 # Discord webhook
@@ -251,9 +258,16 @@ def market():
 @app.route("/item/<item_id>")
 def item_detail(item_id):
     db = get_db()
-    item = db.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
+    if session.get("admin"):
+        if "csrf_token" not in session:
+            session["csrf_token"] = secrets.token_urlsafe(32)
+        item = db.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
+    else:
+        item = db.execute(
+            "SELECT * FROM items WHERE id=? AND status='approved'", (item_id,)
+        ).fetchone()
     if not item:
-        flash("找不到這個商品", "error")
+        flash("找不到這個商品，或商品已下架", "error")
         return redirect(url_for("market"))
     return render_template("item.html", item=item)
 
@@ -612,6 +626,59 @@ def approve_item(item_id):
     )
     flash("內容已儲存並核准上架", "success")
     return redirect(url_for("admin"))
+
+
+@app.route("/admin/frontend/edit/<item_id>", methods=["POST"])
+@admin_required
+def edit_approved_item(item_id):
+    values, error = _validate_admin_item_form()
+    if error:
+        flash(error, "error")
+        return redirect(url_for("item_detail", item_id=item_id))
+
+    db = get_db()
+    cursor = db.execute(
+        """
+        UPDATE items
+        SET title=?, description=?, price=?, category=?, condition=?, updated_at=?
+        WHERE id=? AND status='approved'
+        """,
+        (
+            values["title"], values["description"], values["price"],
+            values["category"], values["condition"],
+            datetime.now().isoformat(), item_id,
+        ),
+    )
+    if cursor.rowcount != 1:
+        db.rollback()
+        flash("只有已上架商品可從前台編輯", "error")
+    else:
+        db.commit()
+        flash("商品內容已更新", "success")
+    return redirect(url_for("item_detail", item_id=item_id))
+
+
+@app.route("/admin/archive/<item_id>", methods=["POST"])
+@admin_required
+def archive_item(item_id):
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("csrf_token", "")
+    if not submitted_token or not session_token or not secrets.compare_digest(submitted_token, session_token):
+        flash("表單已失效，請重新整理後再試", "error")
+        return redirect(url_for("item_detail", item_id=item_id))
+
+    db = get_db()
+    cursor = db.execute(
+        "UPDATE items SET status='archived', updated_at=? WHERE id=? AND status='approved'",
+        (datetime.now().isoformat(), item_id),
+    )
+    if cursor.rowcount != 1:
+        db.rollback()
+        flash("商品不存在或已下架", "error")
+    else:
+        db.commit()
+        flash("商品已下架", "success")
+    return redirect(url_for("item_detail", item_id=item_id))
 
 
 @app.route("/admin/delete/<item_id>", methods=["POST"])

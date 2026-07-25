@@ -69,6 +69,14 @@ color:var(--gold);text-shadow:2px 2px 0 var(--gold-dark)
 .btn-o:hover{background:var(--gold);color:#fff;transform:translate(-1px,-1px)}
 .btn-w{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;background:var(--wine);color:#fff;border:none;padding:.7rem 1.8rem;text-decoration:none;transition:background .2s,transform .15s;box-shadow:2px 2px 0 rgba(122,24,40,0.5)}
 .btn-w:hover{background:#8a2030;transform:translate(-1px,-1px)}
+.admin-panel{margin-top:1.6rem;padding:1.2rem;background:var(--gold-pale);border:2px solid var(--gold)}
+.admin-panel h3{font-family:Uncial Antiqua,serif;font-size:.85rem;color:var(--gold-dark);margin-bottom:1rem}
+.admin-grid{display:grid;grid-template-columns:1fr 180px;gap:.8rem}
+.admin-grid textarea{grid-column:1/-1;min-height:110px;resize:vertical}
+.admin-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.9rem}
+.admin-actions form{margin:0}
+.admin-archive{background:var(--wine);color:#fff;border:none;cursor:pointer}
+@media(max-width:640px){.admin-grid{grid-template-columns:1fr}.admin-grid textarea{grid-column:auto}}
 
 /* tags */
 .tag{display:inline-block;font-family:Uncial Antiqua,serif;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;background:var(--gold-pale);color:var(--gold);padding:2px 7px;border:1px solid rgba(160,112,32,0.3);margin-right:.3rem}
@@ -141,10 +149,13 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
       <li><a href="/wishlist">許願區</a></li>
       <li><a href="/list">上架</a></li>
       <li><a href="/about">關於</a></li>
-      {% if session.get("user_id") %}
+      {% if session.get("admin") %}
+      <li><a href="/admin">後台</a></li>
+      <li><a href="/logout" style="color:var(--wine);">登出</a></li>
+      {% elif session.get("user_id") %}
       <li><a href="/my-items">我的商品</a></li>
       <li><a href="/logout" style="color:var(--wine);">登出</a></li>
-      {% elif not session.get("admin") %}
+      {% else %}
       <li><a href="/login">登入</a></li>
       {% endif %}
     </ul>
@@ -197,6 +208,42 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
       <div class="status g">&#10004; 已確認，等待面交</div>
       {% endif %}
     </div>
+
+    {% if session.get("admin") %}
+    <section class="admin-panel">
+      <h3>管理商品{% if item.status == "archived" %} · 已下架{% endif %}</h3>
+      {% if item.status == "approved" %}
+      <form action="/admin/frontend/edit/{{ item.id }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+        <div class="admin-grid">
+          <input name="title" value="{{ item.title }}" placeholder="商品標題" required>
+          <input name="price" type="number" min="1" max="99999999" value="{{ item.price }}" placeholder="價格" required>
+          <select name="category" required>
+            <option value="weapon" {% if item.category == 'weapon' %}selected{% endif %}>武器</option>
+            <option value="armor" {% if item.category in ['armor', '護甲', '頭盔', '鎖子甲'] %}selected{% endif %}>盔甲</option>
+            <option value="prop" {% if item.category == 'prop' %}selected{% endif %}>道具</option>
+            <option value="accessory" {% if item.category == 'accessory' %}selected{% endif %}>配件</option>
+          </select>
+          <select name="condition" required>
+            <option value="new" {% if item.condition in ['new', '全新', '品相完好無瑕疵'] %}selected{% endif %}>全新</option>
+            <option value="like_new" {% if item.condition in ['like_new', '近全新', '幾乎全新'] %}selected{% endif %}>近全新</option>
+            <option value="used" {% if item.condition not in ['new', '全新', '品相完好無瑕疵', 'like_new', '近全新', '幾乎全新'] %}selected{% endif %}>二手</option>
+          </select>
+          <textarea name="description" placeholder="商品描述">{{ item.description or '' }}</textarea>
+        </div>
+        <div class="admin-actions">
+          <button class="btn-p" type="submit">儲存前台修改</button>
+        </div>
+      </form>
+      <div class="admin-actions">
+        <form action="/admin/archive/{{ item.id }}" method="post" onsubmit="return confirm('確定下架這件商品？')">
+          <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+          <button class="btn-w admin-archive" type="submit">下架</button>
+        </form>
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
 
     {% if item.status == "approved" %}
     <div style="margin-top:1.6rem;text-align:center;">
