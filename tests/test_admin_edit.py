@@ -166,6 +166,10 @@ def test_admin_form_maps_legacy_category_and_condition_values(client):
     html = response.get_data(as_text=True)
     assert '<option value="armor" selected>盔甲</option>' in html
     assert '<option value="used" selected>二手</option>' in html
+    assert 'formaction="/admin/edit/pending-item"' in html
+    assert 'formaction="/admin/approve/pending-item"' in html
+    assert '儲存並核准' in html
+    assert '<form action="/admin/approve/pending-item"' not in html
 
 
 def test_edit_rejects_missing_csrf_token(client):
@@ -188,6 +192,53 @@ def test_edit_rejects_wrong_csrf_token(client):
     )
     assert response.status_code == 302
     assert read_item(db_path, "pending-item")["title"] == "舊標題"
+
+
+def test_approve_saves_form_fields_and_approves_atomically(client, monkeypatch):
+    test_client, db_path = client
+    csrf_token = login_admin(test_client)
+    monkeypatch.setattr(larp_app, "discord_notify", lambda message: None)
+    response = test_client.post(
+        "/admin/approve/pending-item",
+        data=edit_data(
+            csrf_token,
+            title="核准後新標題",
+            description="核准後新描述",
+            price="4321",
+            category="armor",
+            condition="like_new",
+        ),
+    )
+    assert response.status_code == 302
+    item = read_item(db_path, "pending-item")
+    assert item["title"] == "核准後新標題"
+    assert item["description"] == "核准後新描述"
+    assert item["price"] == 4321
+    assert item["category"] == "armor"
+    assert item["condition"] == "like_new"
+    assert item["status"] == "approved"
+
+    detail = test_client.get("/item/pending-item")
+    assert detail.status_code == 200
+    html = detail.get_data(as_text=True)
+    assert "核准後新標題" in html
+    assert "核准後新描述" in html
+    assert "4,321" in html or "4321" in html
+    assert "舊標題" not in html
+
+
+def test_approve_rejects_forged_csrf_without_changes(client, monkeypatch):
+    test_client, db_path = client
+    login_admin(test_client)
+    monkeypatch.setattr(larp_app, "discord_notify", lambda message: None)
+    response = test_client.post(
+        "/admin/approve/pending-item",
+        data=edit_data("forged-token", title="不該成功"),
+    )
+    assert response.status_code == 302
+    item = read_item(db_path, "pending-item")
+    assert item["title"] == "舊標題"
+    assert item["status"] == "pending"
 
 
 def test_edit_route_does_not_modify_approved_item(client):

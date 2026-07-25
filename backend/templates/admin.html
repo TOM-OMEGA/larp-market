@@ -107,10 +107,12 @@ input::placeholder, textarea::placeholder { color: var(--iron); }
       <option value="used" {% if item.condition not in ['new', '全新', '品相完好無瑕疵', 'like_new', '近全新', '幾乎全新'] %}selected{% endif %}>二手</option>
     </select>
     <textarea name="description" placeholder="商品描述">{{ item.description or '' }}</textarea>
-    <div class="save-row"><button class="btn btn-blue" type="submit">儲存修改</button></div>
+    <div class="save-row">
+      <button class="btn btn-blue" type="submit" formaction="/admin/edit/{{ item.id }}">儲存修改</button>
+      <button class="btn btn-approve" type="submit" formaction="/admin/approve/{{ item.id }}">✅ 儲存並核准</button>
+    </div>
   </form>
   <div class="card-actions">
-    <form action="/admin/approve/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-approve">✅ 核准</button></form>
     <form action="/admin/reject/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-reject">❌ 駁回</button></form>
     <form action="/admin/delete/{{ item.id }}" method="post" class="inline-form" onsubmit="return confirm('確定刪除？')"><button class="btn btn-gray">🗑</button></form>
   </div>

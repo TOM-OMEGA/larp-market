@@ -510,14 +510,11 @@ def admin():
                            wishes=wishes, tab=tab)
 
 
-@app.route("/admin/edit/<item_id>", methods=["POST"])
-@admin_required
-def edit_pending_item(item_id):
+def _validate_admin_item_form():
     submitted_token = request.form.get("csrf_token", "")
     session_token = session.get("csrf_token", "")
     if not submitted_token or not session_token or not secrets.compare_digest(submitted_token, session_token):
-        flash("表單已失效，請重新整理後再試", "error")
-        return redirect(url_for("admin", tab="pending"))
+        return None, "表單已失效，請重新整理後再試"
 
     title = request.form.get("title", "").strip()
     description = request.form.get("description", "").strip()
@@ -529,13 +526,26 @@ def edit_pending_item(item_id):
         price = 0
 
     if not title or not 1 <= price <= 99_999_999:
-        flash("標題不可空白，價格必須介於 1 至 99,999,999 元", "error")
-        return redirect(url_for("admin", tab="pending"))
+        return None, "標題不可空白，價格必須介於 1 至 99,999,999 元"
     if category not in {"weapon", "armor", "prop", "accessory"}:
-        flash("商品分類無效", "error")
-        return redirect(url_for("admin", tab="pending"))
+        return None, "商品分類無效"
     if condition not in {"new", "like_new", "used"}:
-        flash("商品品相無效", "error")
+        return None, "商品品相無效"
+    return {
+        "title": title,
+        "description": description,
+        "price": price,
+        "category": category,
+        "condition": condition,
+    }, None
+
+
+@app.route("/admin/edit/<item_id>", methods=["POST"])
+@admin_required
+def edit_pending_item(item_id):
+    values, error = _validate_admin_item_form()
+    if error:
+        flash(error, "error")
         return redirect(url_for("admin", tab="pending"))
 
     db = get_db()
@@ -546,11 +556,11 @@ def edit_pending_item(item_id):
         WHERE id=? AND status='pending'
         """,
         (
-            title,
-            description,
-            price,
-            category,
-            condition,
+            values["title"],
+            values["description"],
+            values["price"],
+            values["category"],
+            values["condition"],
             datetime.now().isoformat(),
             item_id,
         ),
@@ -566,16 +576,41 @@ def edit_pending_item(item_id):
 @app.route("/admin/approve/<item_id>", methods=["POST"])
 @admin_required
 def approve_item(item_id):
+    values, error = _validate_admin_item_form()
+    if error:
+        flash(error, "error")
+        return redirect(url_for("admin", tab="pending"))
+
     db = get_db()
-    db.execute("UPDATE items SET status='approved', updated_at=? WHERE id=?",
-               (datetime.now().isoformat(), item_id))
+    cursor = db.execute(
+        """
+        UPDATE items
+        SET title=?, description=?, price=?, category=?, condition=?,
+            status='approved', updated_at=?
+        WHERE id=? AND status='pending'
+        """,
+        (
+            values["title"],
+            values["description"],
+            values["price"],
+            values["category"],
+            values["condition"],
+            datetime.now().isoformat(),
+            item_id,
+        ),
+    )
+    if cursor.rowcount != 1:
+        db.rollback()
+        flash("商品不存在或已不在待審核狀態", "error")
+        return redirect(url_for("admin", tab="pending"))
+
     item = db.execute("SELECT * FROM items WHERE id=?", (item_id,)).fetchone()
     db.commit()
 
     discord_notify(
         f"✅ 審核通過：{item['title']}\n💰 ${item['price']}"
     )
-    flash("已核准上架", "success")
+    flash("內容已儲存並核准上架", "success")
     return redirect(url_for("admin"))
 
 
