@@ -154,7 +154,7 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
 <main style="max-width:1080px;margin:0 auto;padding:0 2rem 3rem;">
 
   <form method="get" style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin:2rem 0 1.5rem;" class="afu">
-    <input name="q" value="{{ q }}" placeholder="搜尋…" style="flex:1;min-width:150px;" oninput="if(this.value==='')this.form.submit();">
+    <input name="q" value="{{ q }}" placeholder="搜尋商品名稱或描述" aria-label="搜尋商品" style="flex:1;min-width:150px;" oninput="if(this.value==='')this.form.submit();">
     <select name="category" onchange="this.form.submit()" style="width:auto;min-width:105px;">
       <option value="">全部</option>
       <option value="weapon" {% if category=='weapon' %}selected{% endif %}>武器</option>
@@ -178,7 +178,7 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
       <span style="color:var(--dim)">–</span>
       <input name="max_price" value="{{ max_price }}" placeholder="$最高" style="width:70px;text-align:center;">
     </div>
-    <button type="submit" class="btn-o" style="padding:.5rem 1rem;">&#128269;</button>
+    <button type="submit" class="btn-o" style="padding:.5rem 1rem;" aria-label="執行搜尋">搜尋</button>
     <a href="/list" class="btn-p" style="margin-left:auto;">+ 上架</a>
   </form>
 
@@ -195,6 +195,12 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
         <div class="it">{{ item.title }}</div>
         {% if item.description %}<div class="idesc">{{ item.description[:80] }}{% if item.description|length > 80 %}…{% endif %}</div>{% endif %}
         <div class="ip2">${{ item.price }}</div>
+        <span class="tag" aria-label="商品分類">
+          {% if item.category in ['armor', '護甲', '頭盔', '鎖子甲'] %}盔甲{% elif item.category == 'weapon' %}武器{% elif item.category == 'prop' %}道具{% elif item.category == 'accessory' %}配件{% else %}其他{% endif %}
+        </span>
+        <span class="tag">
+          {% if item.condition in ['new', '全新', '品相完好無瑕疵'] %}全新{% elif item.condition in ['like_new', '近全新', '幾乎全新'] %}近全新{% else %}二手{% endif %}
+        </span>
         {% if item.is_overseas %}<span class="tag overseas">海外</span>{% endif %}
       </div>
     </a>

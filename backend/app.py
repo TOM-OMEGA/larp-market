@@ -216,34 +216,61 @@ def home():
     return render_template("home.html", items=recent, wishes=wishes)
 
 
+CATEGORY_VALUES = {"weapon", "armor", "prop", "accessory"}
+CONDITION_VALUES = {"new", "like_new", "used"}
+LEGACY_CATEGORY_VALUES = {
+    "armor": ("armor", "護甲", "頭盔", "鎖子甲"),
+}
+LEGACY_CONDITION_VALUES = {
+    "new": ("new", "全新", "品相完好無瑕疵"),
+    "like_new": ("like_new", "近全新", "幾乎全新"),
+    "used": (
+        "used", "二手", "輕微舊痕無損傷", "二手（輕微舊痕）",
+        "二手（輕微使用痕跡）",
+    ),
+}
+
+
+def _parse_optional_price(value):
+    try:
+        price = int(value)
+    except (TypeError, ValueError):
+        return None
+    return price if price >= 0 else None
+
+
 @app.route("/market")
 def market():
     db = get_db()
     category = request.args.get("category", "")
     condition = request.args.get("condition", "")
     is_overseas = request.args.get("overseas")
-    min_price = request.args.get("min_price", "")
-    max_price = request.args.get("max_price", "")
-    q = request.args.get("q", "")
+    min_price = request.args.get("min_price", "").strip()
+    max_price = request.args.get("max_price", "").strip()
+    q = request.args.get("q", "").strip()
 
     query = "SELECT * FROM items WHERE status='approved'"
     params = []
     if category:
-        query += " AND category=? "
-        params.append(category)
+        values = LEGACY_CATEGORY_VALUES.get(category, (category,))
+        query += f" AND category IN ({','.join('?' for _ in values)})"
+        params.extend(values)
     if condition:
-        query += " AND condition=? "
-        params.append(condition)
+        values = LEGACY_CONDITION_VALUES.get(condition, (condition,))
+        query += f" AND condition IN ({','.join('?' for _ in values)})"
+        params.extend(values)
     if is_overseas == "1":
         query += " AND is_overseas=1"
     elif is_overseas == "0":
         query += " AND is_overseas=0"
-    if min_price:
+    parsed_min = _parse_optional_price(min_price)
+    parsed_max = _parse_optional_price(max_price)
+    if parsed_min is not None:
         query += " AND price>=?"
-        params.append(int(min_price))
-    if max_price:
+        params.append(parsed_min)
+    if parsed_max is not None:
         query += " AND price<=?"
-        params.append(int(max_price))
+        params.append(parsed_max)
     if q:
         query += " AND (title LIKE ? OR description LIKE ?)"
         params.extend([f"%{q}%", f"%{q}%"])
@@ -301,6 +328,20 @@ def about():
 @user_required
 def submit_listing():
     if request.method == "POST":
+        category = request.form.get("category", "")
+        condition = request.form.get("condition", "")
+        if category not in CATEGORY_VALUES or condition not in CONDITION_VALUES:
+            flash("商品分類或品相無效", "error")
+            return redirect(url_for("submit_listing"))
+
+        try:
+            price = int(request.form.get("price", ""))
+        except (TypeError, ValueError):
+            price = 0
+        if not 1 <= price <= 99_999_999:
+            flash("價格必須介於 1 至 99,999,999 元", "error")
+            return redirect(url_for("submit_listing"))
+
         item_id = uuid.uuid4().hex
         now = datetime.now().isoformat()
         image_path = save_image(request.files.get("image"))
@@ -317,9 +358,9 @@ def submit_listing():
                 item_id,
                 request.form["title"],
                 request.form.get("description", ""),
-                int(request.form["price"]),
-                request.form.get("category", "weapon"),
-                request.form.get("condition", "used"),
+                price,
+                category,
+                condition,
                 1 if request.form.get("is_overseas") else 0,
                 session.get("username", "匿名"),
                 request.form["seller_phone"],

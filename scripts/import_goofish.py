@@ -140,10 +140,15 @@ def download_and_validate(item_id: str, images: list[object], stage_dir: Path) -
     return manifest
 
 
-def condition_text(value: object) -> str:
+def condition_code(value: object) -> str:
     if isinstance(value, dict):
         value = value.get("label", "")
-    return CONVERTER.convert(str(value or "二手"))
+    text = CONVERTER.convert(str(value or "二手"))
+    if any(word in text for word in ("近全新", "幾乎全新")):
+        return "like_new"
+    if any(word in text for word in ("全新", "未使用", "完好無瑕疵")):
+        return "new"
+    return "used"
 
 
 def estimate_weight(title: str, description: str) -> float:
@@ -166,12 +171,7 @@ def estimate_weight(title: str, description: str) -> float:
 
 
 def category_for(title: str, description: str) -> str:
-    text = title + description
-    if any(word in text for word in ("頭盔", "桶盔", "面甲")):
-        return "頭盔"
-    if any(word in text for word in ("鎖子甲", "札甲")):
-        return "鎖子甲"
-    return "護甲"
+    return "armor"
 
 
 def price_twd(cny: float, weight: float) -> int:
@@ -238,7 +238,7 @@ def import_item(connection: sqlite3.Connection, item_id: str, item: dict, stage_
                 description + "\n\n產地：海外，預計 2-4 週到貨。",
                 final_price,
                 category_for(title, description),
-                condition_text(item.get("condition")),
+                condition_code(item.get("condition")),
                 f"/uploads/{manifest[0]['filename']}",
                 "達斯維達995",
                 "0900000000",
