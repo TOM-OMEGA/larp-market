@@ -416,15 +416,18 @@ def login_page():
         db = get_db()
 
         if is_register:
+            email = request.form.get("email", "").strip()
             if not username or not password:
                 flash("請填寫帳號和密碼", "error")
+            elif not email:
+                flash("請填寫 Email", "error")
             elif db.execute("SELECT id FROM users WHERE username=?", (username,)).fetchone():
                 flash("帳號已被使用", "error")
             else:
                 uid = uuid.uuid4().hex
                 db.execute(
-                    "INSERT INTO users (id, username, password_hash, created_at) VALUES (?, ?, ?, ?)",
-                    (uid, username, generate_password_hash(password), datetime.now().isoformat())
+                    "INSERT INTO users (id, username, password_hash, email, created_at) VALUES (?, ?, ?, ?, ?)",
+                    (uid, username, generate_password_hash(password), email, datetime.now().isoformat())
                 )
                 db.commit()
                 session["user_id"] = uid

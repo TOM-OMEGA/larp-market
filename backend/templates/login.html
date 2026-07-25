@@ -148,6 +148,7 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
     {% if is_register %}
     <form method="post">
       <div class="field"><label>帳號（用於登入）</label><input name="username" required autofocus></div>
+      <div class="field"><label>Email（用於通知）</label><input name="email" type="email" required placeholder="example@mail.com"></div>
       <div class="field"><label>密碼</label><input name="password" type="password" required></div>
       <button type="submit" class="btn-p" style="width:100%;">註冊</button>
     </form>
