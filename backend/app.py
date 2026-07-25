@@ -79,6 +79,9 @@ def init_db():
         final_price INTEGER,
         commission_rate REAL DEFAULT 0.10,
         seller_id TEXT,
+        source_platform TEXT,
+        source_item_id TEXT,
+        source_url TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     );
@@ -121,6 +124,15 @@ def init_db():
         updated_at TEXT NOT NULL,
         FOREIGN KEY (item_id) REFERENCES items(id)
     );
+    """)
+    columns = {row[1] for row in db.execute("PRAGMA table_info(items)")}
+    for name in ("source_platform", "source_item_id", "source_url"):
+        if name not in columns:
+            db.execute(f"ALTER TABLE items ADD COLUMN {name} TEXT")
+    db.execute("""
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_items_source_unique
+        ON items(source_platform, source_item_id)
+        WHERE source_platform IS NOT NULL AND source_item_id IS NOT NULL
     """)
     db.commit()
     db.close()
