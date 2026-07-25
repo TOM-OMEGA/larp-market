@@ -1,5 +1,6 @@
 """LARP 二手市集 - Flask 後端"""
 import os
+import secrets
 import sqlite3
 import uuid
 from datetime import datetime, timedelta
@@ -450,6 +451,7 @@ def login_page():
             # Try admin login first
             if username == ADMIN_USER and check_password_hash(ADMIN_PASS_HASH, password):
                 session["admin"] = True
+                session["csrf_token"] = secrets.token_urlsafe(32)
                 return redirect(url_for("admin"))
             # Then try user login
             row = db.execute(
@@ -480,6 +482,7 @@ def my_items():
 @app.route("/logout")
 def logout():
     session.pop("admin", None)
+    session.pop("csrf_token", None)
     session.pop("user_id", None)
     session.pop("username", None)
     return redirect(url_for("home"))
@@ -489,6 +492,8 @@ def logout():
 @app.route("/admin")
 @admin_required
 def admin():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_urlsafe(32)
     db = get_db()
     tab = request.args.get("tab", "pending")
     pending = db.execute(
@@ -503,6 +508,59 @@ def admin():
     ).fetchall()
     return render_template("admin.html", pending=pending, active=active,
                            wishes=wishes, tab=tab)
+
+
+@app.route("/admin/edit/<item_id>", methods=["POST"])
+@admin_required
+def edit_pending_item(item_id):
+    submitted_token = request.form.get("csrf_token", "")
+    session_token = session.get("csrf_token", "")
+    if not submitted_token or not session_token or not secrets.compare_digest(submitted_token, session_token):
+        flash("表單已失效，請重新整理後再試", "error")
+        return redirect(url_for("admin", tab="pending"))
+
+    title = request.form.get("title", "").strip()
+    description = request.form.get("description", "").strip()
+    category = request.form.get("category", "").strip()
+    condition = request.form.get("condition", "").strip()
+    try:
+        price = int(request.form.get("price", ""))
+    except (TypeError, ValueError):
+        price = 0
+
+    if not title or not 1 <= price <= 99_999_999:
+        flash("標題不可空白，價格必須介於 1 至 99,999,999 元", "error")
+        return redirect(url_for("admin", tab="pending"))
+    if category not in {"weapon", "armor", "prop", "accessory"}:
+        flash("商品分類無效", "error")
+        return redirect(url_for("admin", tab="pending"))
+    if condition not in {"new", "like_new", "used"}:
+        flash("商品品相無效", "error")
+        return redirect(url_for("admin", tab="pending"))
+
+    db = get_db()
+    cursor = db.execute(
+        """
+        UPDATE items
+        SET title=?, description=?, price=?, category=?, condition=?, updated_at=?
+        WHERE id=? AND status='pending'
+        """,
+        (
+            title,
+            description,
+            price,
+            category,
+            condition,
+            datetime.now().isoformat(),
+            item_id,
+        ),
+    )
+    if cursor.rowcount == 0:
+        flash("商品不存在或已不在待審核狀態", "error")
+    else:
+        db.commit()
+        flash("審核內容已儲存", "success")
+    return redirect(url_for("admin", tab="pending"))
 
 
 @app.route("/admin/approve/<item_id>", methods=["POST"])

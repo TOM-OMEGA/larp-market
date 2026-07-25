@@ -30,9 +30,13 @@ h2 { color: var(--amber); font-size: 1rem; margin-bottom: 1rem; border-bottom: 1
 .btn-red { background: #5a1a1a; color: #f88; }
 .btn-gray { background: #2a2a3a; color: #aaa; }
 .btn-full { width: 100%; text-align: center; }
-input, select { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; }
-input:focus, select:focus { outline: none; border-color: var(--amber); }
-input::placeholder { color: var(--iron); }
+input, select, textarea { background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--amber); }
+input::placeholder, textarea::placeholder { color: var(--iron); }
+.edit-form { display:grid; grid-template-columns:minmax(220px,2fr) minmax(100px,.7fr) minmax(120px,.8fr) minmax(120px,.8fr); gap:.65rem; margin:.8rem 0; }
+.edit-form textarea { grid-column:1 / -1; min-height:88px; resize:vertical; line-height:1.4; }
+.edit-form .save-row { grid-column:1 / -1; display:flex; justify-content:flex-end; }
+@media (max-width:760px) { .edit-form { grid-template-columns:1fr; } .edit-form textarea,.edit-form .save-row { grid-column:1; } }
 .flash { background: #1a3a1a; color: #6f9; padding: 0.8rem 2rem; border-bottom: 1px solid #2a5a2a; }
 .badge { display: inline-block; font-size: 0.7rem; padding: 2px 7px; border-radius: 4px; }
 .badge-overseas { background: #1a2a5a; color: #8cf; }
@@ -87,6 +91,24 @@ input::placeholder { color: var(--iron); }
   </div>
   {% if item.description %}<p class="desc">{{ item.description }}</p>{% endif %}
   {% if item.image_path %}<img src="{{ item.image_path }}" class="img-thumb" style="margin-bottom:0.8rem;">{% endif %}
+  <form action="/admin/edit/{{ item.id }}" method="post" class="edit-form">
+    <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token', '') }}">
+    <input name="title" value="{{ item.title }}" placeholder="商品標題" required>
+    <input name="price" type="number" min="1" max="99999999" value="{{ item.price }}" placeholder="價格" required>
+    <select name="category" required>
+      <option value="weapon" {% if item.category == 'weapon' %}selected{% endif %}>武器</option>
+      <option value="armor" {% if item.category in ['armor', '護甲', '頭盔', '鎖子甲'] %}selected{% endif %}>盔甲</option>
+      <option value="prop" {% if item.category == 'prop' %}selected{% endif %}>道具</option>
+      <option value="accessory" {% if item.category == 'accessory' %}selected{% endif %}>配件</option>
+    </select>
+    <select name="condition" required>
+      <option value="new" {% if item.condition in ['new', '全新', '品相完好無瑕疵'] %}selected{% endif %}>全新</option>
+      <option value="like_new" {% if item.condition in ['like_new', '近全新', '幾乎全新'] %}selected{% endif %}>近全新</option>
+      <option value="used" {% if item.condition not in ['new', '全新', '品相完好無瑕疵', 'like_new', '近全新', '幾乎全新'] %}selected{% endif %}>二手</option>
+    </select>
+    <textarea name="description" placeholder="商品描述">{{ item.description or '' }}</textarea>
+    <div class="save-row"><button class="btn btn-blue" type="submit">儲存修改</button></div>
+  </form>
   <div class="card-actions">
     <form action="/admin/approve/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-approve">✅ 核准</button></form>
     <form action="/admin/reject/{{ item.id }}" method="post" class="inline-form"><button class="btn btn-reject">❌ 駁回</button></form>
