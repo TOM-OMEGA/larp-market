@@ -142,10 +142,14 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
       <li><a href="/wishlist">許願區</a></li>
       <li><a href="/list">上架</a></li>
       <li><a href="/about">關於</a></li>
-      {% if session.get('user_id') %}
+      {% if session.get('admin') %}
+      <li><a href="/admin">後台</a></li>
+      <li><a href="/logout" style="color:var(--wine);">登出</a></li>
+      {% elif session.get('user_id') %}
+      <li><a href="/cart">購物車 ({{ cart_count }})</a></li>
       <li><a href="/my-items">我的商品</a></li>
       <li><a href="/logout" style="color:var(--wine);">登出</a></li>
-      {% elif not session.get('admin') %}
+      {% else %}
       <li><a href="/login">登入</a></li>
       {% endif %}
     </ul>

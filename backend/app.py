@@ -110,7 +110,18 @@ def init_db():
         id TEXT PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
         password_hash TEXT NOT NULL,
+        email TEXT,
         created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS cart_items (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (item_id) REFERENCES items(id),
+        UNIQUE (user_id, item_id)
     );
 
     CREATE TABLE IF NOT EXISTS settings (
@@ -128,15 +139,27 @@ def init_db():
         final_amount INTEGER,
         status TEXT NOT NULL DEFAULT 'deposit_paid',
         notes TEXT,
+        user_id TEXT,
+        order_id TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         FOREIGN KEY (item_id) REFERENCES items(id)
     );
     """)
-    columns = {row[1] for row in db.execute("PRAGMA table_info(items)")}
+    item_columns = {row[1] for row in db.execute("PRAGMA table_info(items)")}
     for name in ("source_platform", "source_item_id", "source_url"):
-        if name not in columns:
+        if name not in item_columns:
             db.execute(f"ALTER TABLE items ADD COLUMN {name} TEXT")
+    user_columns = {row[1] for row in db.execute("PRAGMA table_info(users)")}
+    if "email" not in user_columns:
+        db.execute("ALTER TABLE users ADD COLUMN email TEXT")
+    transaction_columns = {
+        row[1] for row in db.execute("PRAGMA table_info(transactions)")
+    }
+    if "user_id" not in transaction_columns:
+        db.execute("ALTER TABLE transactions ADD COLUMN user_id TEXT")
+    if "order_id" not in transaction_columns:
+        db.execute("ALTER TABLE transactions ADD COLUMN order_id TEXT")
     db.execute("""
         CREATE UNIQUE INDEX IF NOT EXISTS idx_items_source_unique
         ON items(source_platform, source_item_id)
@@ -144,6 +167,34 @@ def init_db():
     """)
     db.commit()
     db.close()
+
+
+def _ensure_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_urlsafe(32)
+    return session["csrf_token"]
+
+
+def _valid_csrf():
+    submitted = request.form.get("csrf_token", "")
+    expected = session.get("csrf_token", "")
+    return bool(
+        submitted and expected and secrets.compare_digest(submitted, expected)
+    )
+
+
+@app.context_processor
+def inject_cart_count():
+    if not session.get("user_id"):
+        return {"cart_count": 0}
+    try:
+        count = get_db().execute(
+            "SELECT COUNT(*) FROM cart_items WHERE user_id=?",
+            (session["user_id"],),
+        ).fetchone()[0]
+    except sqlite3.OperationalError:
+        count = 0
+    return {"cart_count": count}
 
 
 def admin_required(f):
@@ -160,6 +211,7 @@ def user_required(f):
     def decorated(*args, **kwargs):
         if not session.get("user_id"):
             return redirect(url_for("login_page") + "?next=" + request.path)
+        _ensure_csrf_token()
         return f(*args, **kwargs)
     return decorated
 
@@ -425,50 +477,158 @@ def submit_wish():
 @app.route("/buy/<item_id>", methods=["GET", "POST"])
 def buy_item(item_id):
     db = get_db()
-    item = db.execute("SELECT * FROM items WHERE id=? AND status='approved'",
-                      (item_id,)).fetchone()
+    item = db.execute(
+        "SELECT id FROM items WHERE id=? AND status='approved'", (item_id,)
+    ).fetchone()
     if not item:
         flash("商品不存在或已下架", "error")
         return redirect(url_for("market"))
+    if not session.get("user_id"):
+        return redirect(url_for("login_page", next=url_for("item_detail", item_id=item_id)))
+    flash("請從商品頁加入購物車後送出保留申請", "success")
+    return redirect(url_for("item_detail", item_id=item_id))
 
-    if request.method == "POST":
-        deposit = int(item["price"] * 0.5)
-        now = datetime.now().isoformat()
 
-        db.execute("""
-            UPDATE items SET
-                status='deposit_paid',
-                deposit_paid=1,
-                deposit_buyer_name=?,
-                deposit_buyer_phone=?,
-                updated_at=?
-            WHERE id=?
-        """, (
-            request.form["buyer_name"],
-            request.form["buyer_phone"],
-            now, item_id
-        ))
+# ── Routes: Cart ────────────────────────────────────────
+@app.route("/cart")
+@user_required
+def cart():
+    db = get_db()
+    rows = db.execute(
+        """
+        SELECT cart_items.id AS cart_id, items.*
+        FROM cart_items
+        JOIN items ON items.id=cart_items.item_id
+        WHERE cart_items.user_id=?
+        ORDER BY cart_items.created_at DESC
+        """,
+        (session["user_id"],),
+    ).fetchall()
+    total = sum(row["price"] for row in rows if row["status"] == "approved")
+    user = db.execute(
+        "SELECT email FROM users WHERE id=?", (session["user_id"],)
+    ).fetchone()
+    return render_template(
+        "cart.html", items=rows, total=total,
+        user_email=user["email"] if user else "",
+    )
 
-        tx_id = uuid.uuid4().hex
-        db.execute("""
-            INSERT INTO transactions (id, item_id, buyer_name, buyer_phone,
-                                      buyer_email, deposit_amount, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """, (tx_id, item_id, request.form["buyer_name"],
-              request.form["buyer_phone"], request.form.get("buyer_email", ""),
-              deposit, now, now))
-        db.commit()
 
-        discord_notify(
-            f"💸 訂金已收：{item['title']}\n"
-            f"👤 買家：{request.form['buyer_name']} ({request.form['buyer_phone']})\n"
-            f"💰 訂金：${deposit}"
-        )
-
-        flash(f"訂金 ${deposit} 已記錄，請轉帳至指定帳戶", "success")
+@app.route("/cart/add/<item_id>", methods=["POST"])
+@user_required
+def cart_add(item_id):
+    if not _valid_csrf():
+        flash("CSRF 驗證失敗", "error")
         return redirect(url_for("item_detail", item_id=item_id))
+    db = get_db()
+    item = db.execute(
+        "SELECT id FROM items WHERE id=? AND status='approved'", (item_id,)
+    ).fetchone()
+    if not item:
+        flash("商品已下架或無法加入購物車", "error")
+        return redirect(url_for("market"))
+    db.execute(
+        "INSERT OR IGNORE INTO cart_items (id, user_id, item_id, created_at) "
+        "VALUES (?, ?, ?, ?)",
+        (uuid.uuid4().hex, session["user_id"], item_id, datetime.now().isoformat()),
+    )
+    db.commit()
+    flash("已加入購物車", "success")
+    return redirect(request.referrer or url_for("cart"))
 
-    return render_template("buy.html", item=item)
+
+@app.route("/cart/remove/<cart_id>", methods=["POST"])
+@user_required
+def cart_remove(cart_id):
+    if not _valid_csrf():
+        flash("CSRF 驗證失敗", "error")
+        return redirect(url_for("cart"))
+    db = get_db()
+    db.execute(
+        "DELETE FROM cart_items WHERE id=? AND user_id=?",
+        (cart_id, session["user_id"]),
+    )
+    db.commit()
+    return redirect(url_for("cart"))
+
+
+@app.route("/cart/checkout", methods=["POST"])
+@user_required
+def cart_checkout():
+    if not _valid_csrf():
+        flash("CSRF 驗證失敗", "error")
+        return redirect(url_for("cart"))
+    buyer_name = request.form.get("buyer_name", "").strip()
+    buyer_phone = request.form.get("buyer_phone", "").strip()
+    buyer_email = request.form.get("buyer_email", "").strip()
+    notes = request.form.get("notes", "").strip()
+    if not 1 <= len(buyer_name) <= 80 or not 6 <= len(buyer_phone) <= 30:
+        flash("請填寫有效的姓名與電話", "error")
+        return redirect(url_for("cart"))
+    if buyer_email and (len(buyer_email) > 254 or "@" not in buyer_email):
+        flash("Email 格式不正確", "error")
+        return redirect(url_for("cart"))
+    if len(notes) > 1000:
+        flash("備註不可超過 1000 字", "error")
+        return redirect(url_for("cart"))
+
+    db = get_db()
+    order_id = uuid.uuid4().hex
+    now = datetime.now().isoformat()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        rows = db.execute(
+            """
+            SELECT cart_items.item_id, items.title, items.price, items.status
+            FROM cart_items
+            JOIN items ON items.id=cart_items.item_id
+            WHERE cart_items.user_id=?
+            ORDER BY cart_items.created_at
+            """,
+            (session["user_id"],),
+        ).fetchall()
+        if not rows:
+            raise ValueError("購物車是空的")
+        if any(row["status"] != "approved" for row in rows):
+            raise ValueError("購物車內有商品已被保留或下架")
+        for row in rows:
+            result = db.execute(
+                "UPDATE items SET status='reservation_requested', updated_at=? "
+                "WHERE id=? AND status='approved'",
+                (now, row["item_id"]),
+            )
+            if result.rowcount != 1:
+                raise ValueError(f"{row['title']} 已無法保留")
+            db.execute(
+                """
+                INSERT INTO transactions (
+                    id, item_id, buyer_name, buyer_phone, buyer_email,
+                    deposit_amount, status, notes, user_id, order_id,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, 'reservation_requested', ?, ?, ?, ?, ?)
+                """,
+                (
+                    uuid.uuid4().hex, row["item_id"], buyer_name, buyer_phone,
+                    buyer_email, int(row["price"] * 0.5), notes,
+                    session["user_id"], order_id, now, now,
+                ),
+            )
+        db.execute("DELETE FROM cart_items WHERE user_id=?", (session["user_id"],))
+        db.commit()
+    except (sqlite3.Error, ValueError) as exc:
+        db.rollback()
+        flash(str(exc), "error")
+        return redirect(url_for("cart"))
+
+    titles = "、".join(row["title"] for row in rows)
+    total = sum(row["price"] for row in rows)
+    discord_notify(
+        f"🛒 新的保留申請：{titles}\n"
+        f"👤 買家：{buyer_name} ({buyer_phone})\n"
+        f"💰 商品總額：${total}｜訂金預估：${int(total * 0.5)}"
+    )
+    flash("保留申請已送出，湯姆會聯絡你確認付款方式", "success")
+    return redirect(url_for("market"))
 
 
 # ── Routes: Auth ───────────────────────────────────────
@@ -498,13 +658,17 @@ def login_page():
                     (uid, username, generate_password_hash(password), email, datetime.now().isoformat())
                 )
                 db.commit()
+                session.pop("admin", None)
                 session["user_id"] = uid
                 session["username"] = username
+                _ensure_csrf_token()
                 flash("註冊成功！", "success")
                 return redirect(next_url if next_url != "/" else "/list")
         else:
             # Try admin login first
             if username == ADMIN_USER and check_password_hash(ADMIN_PASS_HASH, password):
+                session.pop("user_id", None)
+                session.pop("username", None)
                 session["admin"] = True
                 session["csrf_token"] = secrets.token_urlsafe(32)
                 return redirect(url_for("admin"))
@@ -514,8 +678,10 @@ def login_page():
                 (username,)
             ).fetchone()
             if row and check_password_hash(row["password_hash"], password):
+                session.pop("admin", None)
                 session["user_id"] = row["id"]
                 session["username"] = row["username"]
+                _ensure_csrf_token()
                 flash("登入成功！", "success")
                 return redirect(next_url)
             flash("帳號或密碼錯誤", "error")
@@ -555,8 +721,22 @@ def admin():
         "SELECT * FROM items WHERE status='pending' ORDER BY created_at DESC"
     ).fetchall()
     active = db.execute(
-        "SELECT * FROM items WHERE status NOT IN ('pending','sold','cancelled') "
-        "ORDER BY updated_at DESC"
+        """
+        SELECT items.*,
+               transactions.buyer_name AS reservation_buyer_name,
+               transactions.buyer_phone AS reservation_buyer_phone,
+               transactions.buyer_email AS reservation_buyer_email,
+               transactions.notes AS reservation_notes,
+               transactions.order_id AS reservation_order_id
+        FROM items
+        LEFT JOIN transactions ON transactions.id = (
+            SELECT latest.id FROM transactions AS latest
+            WHERE latest.item_id=items.id
+            ORDER BY latest.created_at DESC LIMIT 1
+        )
+        WHERE items.status NOT IN ('pending','sold','cancelled')
+        ORDER BY items.updated_at DESC
+        """
     ).fetchall()
     wishes = db.execute(
         "SELECT * FROM wishes ORDER BY created_at DESC LIMIT 20"
@@ -749,6 +929,68 @@ def reject_item(item_id):
     db.commit()
     flash("已駁回", "success")
     return redirect(url_for("admin"))
+
+
+@app.route("/admin/reservation/confirm/<item_id>", methods=["POST"])
+@admin_required
+def confirm_reservation(item_id):
+    if not _valid_csrf():
+        flash("CSRF 驗證失敗", "error")
+        return redirect(url_for("admin", tab="active"))
+    db = get_db()
+    now = datetime.now().isoformat()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        result = db.execute(
+            "UPDATE items SET status='deposit_paid', deposit_paid=1, updated_at=? "
+            "WHERE id=? AND status='reservation_requested'",
+            (now, item_id),
+        )
+        if result.rowcount != 1:
+            raise ValueError("保留申請已處理或不存在")
+        db.execute(
+            "UPDATE transactions SET status='deposit_paid', updated_at=? "
+            "WHERE item_id=? AND status='reservation_requested'",
+            (now, item_id),
+        )
+        db.commit()
+    except (sqlite3.Error, ValueError) as exc:
+        db.rollback()
+        flash(str(exc), "error")
+        return redirect(url_for("admin", tab="active"))
+    flash("已確認訂金，商品進入交易流程", "success")
+    return redirect(url_for("admin", tab="active"))
+
+
+@app.route("/admin/reservation/release/<item_id>", methods=["POST"])
+@admin_required
+def release_reservation(item_id):
+    if not _valid_csrf():
+        flash("CSRF 驗證失敗", "error")
+        return redirect(url_for("admin", tab="active"))
+    db = get_db()
+    now = datetime.now().isoformat()
+    try:
+        db.execute("BEGIN IMMEDIATE")
+        result = db.execute(
+            "UPDATE items SET status='approved', updated_at=? "
+            "WHERE id=? AND status='reservation_requested'",
+            (now, item_id),
+        )
+        if result.rowcount != 1:
+            raise ValueError("保留申請已處理或不存在")
+        db.execute(
+            "UPDATE transactions SET status='cancelled', updated_at=? "
+            "WHERE item_id=? AND status='reservation_requested'",
+            (now, item_id),
+        )
+        db.commit()
+    except (sqlite3.Error, ValueError) as exc:
+        db.rollback()
+        flash(str(exc), "error")
+        return redirect(url_for("admin", tab="active"))
+    flash("已釋放保留，商品重新上架", "success")
+    return redirect(url_for("admin", tab="active"))
 
 
 @app.route("/admin/ship/<item_id>", methods=["POST"])

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>購物車 - LARP 二手市集</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e8d5b8;--paper:#f5ead8;--border:#b89860;--ink:#2d1a08;--muted:#765b3f;--gold:#a07020;--wine:#7a1828;--pale:#f8ecd0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC",sans-serif;line-height:1.65}.n{background:var(--paper);border-bottom:2px solid var(--gold);padding:.9rem 2rem}.ni{max-width:1080px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}.brand{font-family:"Uncial Antiqua",serif;color:var(--gold);text-decoration:none}.links{display:flex;gap:1.1rem;list-style:none;margin:0;padding:0;flex-wrap:wrap}.links a{color:var(--ink);text-decoration:none;font-size:.9rem}.links a.active{color:var(--gold);font-weight:700}main{max-width:920px;margin:auto;padding:2rem}.flash{background:var(--pale);border-left:3px solid var(--gold);padding:.7rem 1rem;margin-bottom:1rem}.layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.8fr);gap:1.3rem}.panel{background:var(--paper);border:1px solid var(--border);box-shadow:3px 3px 0 #c4a070;padding:1.25rem}.panel h1,.panel h2{font-family:"Uncial Antiqua",serif;font-weight:400;margin:.1rem 0 1rem}.cart-item{display:grid;grid-template-columns:80px minmax(0,1fr) auto;gap:1rem;align-items:center;padding:1rem 0;border-bottom:1px solid var(--border)}.cart-item img,.placeholder{width:80px;height:70px;object-fit:cover;background:#d8c8a0}.item-title{font-weight:700;color:var(--ink);text-decoration:none}.price{font-variant-numeric:tabular-nums;font-weight:700;color:var(--gold)}.status{font-size:.8rem;color:var(--wine)}button,.button{font:inherit;border:0;cursor:pointer;text-decoration:none;display:inline-block;padding:.65rem 1rem}.remove{background:transparent;color:var(--wine);padding:.3rem}.primary{width:100%;background:var(--gold);color:white;font-weight:700}.secondary{background:transparent;color:var(--gold);border:1px solid var(--gold)}label{display:block;font-size:.82rem;font-weight:700;margin:.8rem 0 .25rem}input,textarea{width:100%;padding:.65rem .75rem;border:1px solid var(--border);background:#ede0c4;color:var(--ink);font:inherit}textarea{min-height:85px;resize:vertical}.summary{display:flex;justify-content:space-between;gap:1rem;font-size:1.1rem;margin:1rem 0}.empty{text-align:center;padding:2rem;color:var(--muted)}.hint{font-size:.82rem;color:var(--muted);margin:.7rem 0}.unavailable{opacity:.65}@media(max-width:720px){.n{padding:.8rem 1rem}.ni{align-items:flex-start;flex-direction:column}.links{gap:.75rem}main{padding:1rem}.layout{grid-template-columns:1fr}.cart-item{grid-template-columns:64px minmax(0,1fr)}.cart-item img,.placeholder{width:64px;height:60px}.cart-item form{grid-column:2}}
+</style>
+</head>
+<body>
+<nav class="n"><div class="ni"><a href="/" class="brand">LARP 二手市集</a><ul class="links"><li><a href="/market">市集</a></li><li><a href="/wishlist">許願區</a></li><li><a href="/list">上架</a></li><li><a href="/cart" class="active">購物車 ({{ cart_count }})</a></li><li><a href="/my-items">我的商品</a></li><li><a href="/logout">登出</a></li></ul></div></nav>
+<main>
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category,msg in messages %}<div class="flash">{{ msg }}</div>{% endfor %}{% endwith %}
+<div class="layout">
+<section class="panel">
+<h1>購物車 ({{ cart_count }})</h1>
+{% if items %}
+{% for item in items %}
+<article class="cart-item{% if item.status != 'approved' %} unavailable{% endif %}">
+{% if item.image_path %}<img src="{{ item.image_path }}" alt="{{ item.title }}">{% else %}<div class="placeholder"></div>{% endif %}
+<div><a href="/item/{{ item.id }}" class="item-title">{{ item.title }}</a><div class="price">NT$ {{ "{:,}".format(item.price) }}</div>{% if item.status != 'approved' %}<div class="status">已被保留或下架，請移除</div>{% endif %}</div>
+<form action="/cart/remove/{{ item.cart_id }}" method="post"><input type="hidden" name="csrf_token" value="{{ session.get('csrf_token','') }}"><button class="remove" type="submit" aria-label="移除 {{ item.title }}">移除</button></form>
+</article>
+{% endfor %}
+<div class="summary"><span>商品合計</span><strong class="price">NT$ {{ "{:,}".format(total) }}</strong></div>
+{% else %}<div class="empty">購物車目前是空的。<br><a href="/market" class="button secondary" style="margin-top:1rem">前往市集</a></div>{% endif %}
+</section>
+<aside class="panel"><h2>送出保留申請</h2><p class="hint">送出後商品會暫時保留，湯姆確認庫存與付款方式後再通知你。這一步不代表已付款。</p>
+<form action="/cart/checkout" method="post"><input type="hidden" name="csrf_token" value="{{ session.get('csrf_token','') }}"><label>姓名</label><input name="buyer_name" maxlength="80" required><label>電話</label><input name="buyer_phone" maxlength="30" required><label>Email</label><input name="buyer_email" type="email" maxlength="254" value="{{ user_email or '' }}"><label>備註</label><textarea name="notes" maxlength="1000" placeholder="面交時間、尺寸確認等"></textarea><button class="primary" type="submit" {% if not items %}disabled{% endif %}>送出保留申請</button></form></aside>
+</div></main>
+</body></html>

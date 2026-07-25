@@ -39,6 +39,7 @@ h1 { color: var(--amber); padding: 2rem 2rem 0; font-size: 1.4rem; }
   <span class="brand">⚔ LARP 二手市集</span>
   <span class="user">{{ session.get('username','') }} 的商品</span>
   <a href="/list">+ 上架</a>
+  <a href="/cart">購物車 ({{ cart_count }})</a>
   <a href="/">市集</a>
   <a href="/logout" style="color:#f88;">登出</a>
 </nav>

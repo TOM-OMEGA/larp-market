@@ -134,11 +134,27 @@ input::placeholder, textarea::placeholder { color: var(--iron); }
       <div>
         <div class="card-title">{{ item.title }}</div>
         <div class="card-sub">${{ item.price }} · {{ item.status }}</div>
+        {% if item.status == 'reservation_requested' %}
+        <div class="card-sub" style="margin-top:.45rem;color:#d8c58d;">
+          保留申請：{{ item.reservation_buyer_name }} · {{ item.reservation_buyer_phone }}
+          {% if item.reservation_buyer_email %} · {{ item.reservation_buyer_email }}{% endif %}
+        </div>
+        {% if item.reservation_notes %}<div class="card-sub">備註：{{ item.reservation_notes }}</div>{% endif %}
+        {% endif %}
       </div>
     </div>
   </div>
   <div class="card-actions">
-    {% if item.status == 'deposit_paid' %}
+    {% if item.status == 'reservation_requested' %}
+    <form action="/admin/reservation/confirm/{{ item.id }}" method="post" class="inline-form">
+      <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token','') }}">
+      <button class="btn btn-green">確認訂金</button>
+    </form>
+    <form action="/admin/reservation/release/{{ item.id }}" method="post" class="inline-form">
+      <input type="hidden" name="csrf_token" value="{{ session.get('csrf_token','') }}">
+      <button class="btn btn-red">釋放商品</button>
+    </form>
+    {% elif item.status == 'deposit_paid' %}
     <form action="/admin/ship/{{ item.id }}" method="post" style="display:flex;gap:0.4rem;align-items:center;">
       <input name="tracking_number" placeholder="追蹤單號" style="width:120px;">
       <button class="btn btn-blue">📮 已寄出</button>
