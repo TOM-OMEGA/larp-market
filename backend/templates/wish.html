@@ -49,6 +49,12 @@ margin:.04em .1em 0 0;
 color:var(--gold);text-shadow:2px 2px 0 var(--gold-dark)
 }
 
+.nav-trail{display:flex;align-items:center;gap:.75rem;min-height:44px;margin:1.2rem 0 .2rem;padding-bottom:.65rem;border-bottom:1px solid rgba(184,152,96,.65);font-family:"Noto Sans TC",sans-serif;font-size:.82rem;color:var(--dim)}
+.nav-trail a{display:inline-flex;align-items:center;gap:.4rem;min-height:44px;color:var(--gold-dark);font-weight:700;text-decoration:none}
+.nav-trail a:hover{color:var(--wine)}
+.nav-trail .sep{color:var(--card-border)}
+.nav-trail .current{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 /* nav */
 .n{background:var(--card);border-bottom:2px solid var(--gold);padding:.9rem 2rem;box-shadow:0 2px 10px var(--shadow)}
 .ni{max-width:1080px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
@@ -155,6 +161,11 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
   </div>
 </nav>
 <main style="max-width:1080px;margin:0 auto;padding:0 2rem 3rem;">
+  <nav class="nav-trail" aria-label="頁面路徑">
+    <a href="/wishlist" aria-label="返回許願區">← <span>返回許願區</span></a>
+    <span class="sep" aria-hidden="true">/</span>
+    <span class="current" aria-current="page">發布許願</span>
+  </nav>
 
   <p style="color:var(--dim);font-family:Cormorant Garamond,serif;font-style:italic;margin:2rem 0 1.5rem;font-size:1.05rem;" class="afu">許願區是公開的，所有人都能看到。</p>
   <form method="post" class="card cp">

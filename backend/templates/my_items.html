@@ -32,6 +32,12 @@ h1 { color: var(--amber); padding: 2rem 2rem 0; font-size: 1.4rem; }
 .empty { text-align: center; padding: 3rem; color: var(--iron); }
 .info-col { flex: 1; }
 .action-col { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-end; }
+.nav-trail { display:flex; align-items:center; gap:.75rem; min-height:44px; margin:1rem 2rem 0; padding-bottom:.65rem; border-bottom:1px solid var(--border); font-size:.82rem; color:var(--iron); }
+.nav-trail a { display:inline-flex; align-items:center; min-height:44px; color:var(--amber); text-decoration:none; font-weight:700; }
+.nav-trail a:hover { color:#e0c56c; }
+.nav-trail .sep { color:var(--border); }
+.nav-trail .current { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+@media(max-width:640px) { .navbar { padding:.8rem 1rem; gap:.6rem; flex-wrap:wrap; } .navbar .brand { width:100%; } .navbar .user { margin-right:auto; } .nav-trail { margin:1rem 1rem 0; } h1 { padding:1.4rem 1rem 0; } .card { margin:1rem; flex-direction:column; } .action-col { width:100%; align-items:flex-start; } }
 </style>
 </head>
 <body>
@@ -52,6 +58,11 @@ h1 { color: var(--amber); padding: 2rem 2rem 0; font-size: 1.4rem; }
 {% endif %}
 {% endwith %}
 
+<nav class="nav-trail" aria-label="頁面路徑">
+  <a href="/market" aria-label="返回市集">←&nbsp; 返回市集</a>
+  <span class="sep" aria-hidden="true">/</span>
+  <span class="current" aria-current="page">我的商品</span>
+</nav>
 <h1>我的商品</h1>
 
 {% if items %}

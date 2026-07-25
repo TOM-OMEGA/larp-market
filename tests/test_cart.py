@@ -273,6 +273,40 @@ def test_admin_can_release_reservation_but_forged_csrf_cannot(client):
     connection.close()
 
 
+def test_detail_pages_have_stable_back_navigation(client):
+    test_client, _ = client
+    public_cases = {
+        "/item/item-1": ('href="/market"', "返回市集", "nav-trail"),
+        "/wish": ('href="/wishlist"', "返回許願區", "nav-trail"),
+    }
+    for path, markers in public_cases.items():
+        html = test_client.get(path).get_data(as_text=True)
+        for marker in markers:
+            assert marker in html
+        assert "history.back" not in html
+
+    login_user(test_client)
+    member_cases = {
+        "/cart": ('href="/market"', "繼續逛市集", "nav-trail"),
+        "/list": ('href="/market"', "取消並返回市集", "nav-trail"),
+        "/my-items": ('href="/market"', "返回市集", "nav-trail"),
+    }
+    for path, markers in member_cases.items():
+        html = test_client.get(path).get_data(as_text=True)
+        for marker in markers:
+            assert marker in html
+        assert "history.back" not in html
+
+
+def test_cart_navigation_uses_site_branding(client):
+    test_client, _ = client
+    login_user(test_client)
+    html = test_client.get("/cart").get_data(as_text=True)
+    assert 'src="/lion-aquitaine.svg"' in html
+    assert 'class="shield"' in html
+    assert "Cormorant Garamond" in html
+
+
 def test_frontend_navigation_matches_session_role(client):
     test_client, _ = client
     public_pages = ("/", "/market", "/wishlist", "/wish", "/about", "/item/item-1")
