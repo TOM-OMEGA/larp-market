@@ -78,6 +78,7 @@ def init_db():
         transfer_half_at TEXT,
         final_price INTEGER,
         commission_rate REAL DEFAULT 0.10,
+        seller_id TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     );
@@ -91,6 +92,13 @@ def init_db():
         contact_phone TEXT NOT NULL,
         contact_email TEXT,
         status TEXT NOT NULL DEFAULT 'active',
+        created_at TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        username TEXT UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
         created_at TEXT NOT NULL
     );
 
@@ -122,7 +130,16 @@ def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get("admin"):
-            return redirect(url_for("login"))
+            return redirect(url_for("login_page"))
+        return f(*args, **kwargs)
+    return decorated
+
+
+def user_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("user_id"):
+            return redirect(url_for("login_page") + "?next=" + request.path)
         return f(*args, **kwargs)
     return decorated
 
@@ -254,6 +271,7 @@ def about():
 
 # ── Routes: Submit ───────────────────────────────────────
 @app.route("/list", methods=["GET", "POST"])
+@user_required
 def submit_listing():
     if request.method == "POST":
         item_id = uuid.uuid4().hex
@@ -266,8 +284,8 @@ def submit_listing():
                 INSERT INTO items (
                     id, title, description, price, category, condition,
                     is_overseas, seller_name, seller_phone, seller_email,
-                    image_path, status, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?)
+                    image_path, status, seller_id, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
             """, (
                 item_id,
                 request.form["title"],
@@ -276,10 +294,11 @@ def submit_listing():
                 request.form.get("category", "weapon"),
                 request.form.get("condition", "used"),
                 1 if request.form.get("is_overseas") else 0,
-                request.form["seller_name"],
+                session.get("username", "匿名"),
                 request.form["seller_phone"],
                 request.form.get("seller_email", ""),
                 image_path,
+                session.get("user_id"),
                 now, now
             ))
             db.commit()
@@ -293,7 +312,7 @@ def submit_listing():
         discord_notify(
             f"📦 新上架申請：{request.form['title']}\n"
             f"💰 價格：${request.form['price']}\n"
-            f"👤 賣家：{request.form['seller_name']}\n"
+            f"👤 賣家：{session.get('username','匿名')}\n"
             f"🔗 https://sheer-spirits-galaxy-trustees.trycloudflare.com/admin"
         )
 
@@ -386,20 +405,68 @@ def buy_item(item_id):
 
 # ── Routes: Auth ───────────────────────────────────────
 @app.route("/login", methods=["GET", "POST"])
-def login():
+@app.route("/register", methods=["GET", "POST"])
+def login_page():
+    is_register = "/register" in request.path
+    next_url = request.args.get("next", "/")
+
     if request.method == "POST":
-        user = request.form.get("username", "")
-        pw = request.form.get("password", "")
-        if user == ADMIN_USER and check_password_hash(ADMIN_PASS_HASH, pw):
-            session["admin"] = True
-            return redirect(url_for("admin"))
-        flash("帳號或密碼錯誤", "error")
-    return render_template("login.html")
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        db = get_db()
+
+        if is_register:
+            if not username or not password:
+                flash("請填寫帳號和密碼", "error")
+            elif db.execute("SELECT id FROM users WHERE username=?", (username,)).fetchone():
+                flash("帳號已被使用", "error")
+            else:
+                uid = uuid.uuid4().hex
+                db.execute(
+                    "INSERT INTO users (id, username, password_hash, created_at) VALUES (?, ?, ?, ?)",
+                    (uid, username, generate_password_hash(password), datetime.now().isoformat())
+                )
+                db.commit()
+                session["user_id"] = uid
+                session["username"] = username
+                flash("註冊成功！", "success")
+                return redirect(next_url if next_url != "/" else "/list")
+        else:
+            # Try admin login first
+            if username == ADMIN_USER and check_password_hash(ADMIN_PASS_HASH, password):
+                session["admin"] = True
+                return redirect(url_for("admin"))
+            # Then try user login
+            row = db.execute(
+                "SELECT id, username, password_hash FROM users WHERE username=?",
+                (username,)
+            ).fetchone()
+            if row and check_password_hash(row["password_hash"], password):
+                session["user_id"] = row["id"]
+                session["username"] = row["username"]
+                flash("登入成功！", "success")
+                return redirect(next_url)
+            flash("帳號或密碼錯誤", "error")
+
+    return render_template("login.html", is_register=is_register)
+
+
+@app.route("/my-items")
+@user_required
+def my_items():
+    db = get_db()
+    items = db.execute(
+        "SELECT * FROM items WHERE seller_id=? ORDER BY created_at DESC",
+        (session["user_id"],)
+    ).fetchall()
+    return render_template("my_items.html", items=items)
 
 
 @app.route("/logout")
 def logout():
     session.pop("admin", None)
+    session.pop("user_id", None)
+    session.pop("username", None)
     return redirect(url_for("home"))
 
 

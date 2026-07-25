@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>登入 - LARP 二手市集</title>
+<title>{% if is_register %}註冊{% else %}登入{% endif %} - LARP 二手市集</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -137,7 +137,7 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
   <div class="login-box" style="position:relative;">
     <div style="text-align:center;margin-bottom:2rem;">
       <img src="/lion-aquitaine.svg" style="width:36px;height:40px;margin-bottom:.6rem;" alt="⚜">
-      <div style="font-family:Uncial Antiqua,serif;font-size:1.4rem;color:var(--gold);letter-spacing:.08em;">管理後台</div>
+      <div style="font-family:Uncial Antiqua,serif;font-size:1.4rem;color:var(--gold);letter-spacing:.08em;">{% if is_register %}註冊帳號{% else %}會員登入{% endif %}</div>
       <div style="font-family:Cormorant Garamond,serif;color:var(--dim);font-style:italic;margin-top:.4rem;">LARP 二手市集</div>
     </div>
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -145,11 +145,25 @@ hr{border:none;border-top:1px solid var(--card-border);margin:1.5rem 0}
     <div class="flash" style="margin-bottom:1rem;">{{ msg }}</div>
     {% endfor %}
     {% endwith %}
+    {% if is_register %}
+    <form method="post">
+      <div class="field"><label>帳號（用於登入）</label><input name="username" required autofocus></div>
+      <div class="field"><label>密碼</label><input name="password" type="password" required></div>
+      <button type="submit" class="btn-p" style="width:100%;">註冊</button>
+    </form>
+    <div style="text-align:center;margin-top:1.6rem;">
+      <a href="/login" style="font-family:Cormorant Garamond,serif;color:var(--dim);font-style:italic;text-decoration:none;font-size:.95rem;">已有帳號？登入 →</a>
+    </div>
+    {% else %}
     <form method="post">
       <div class="field"><label>帳號</label><input name="username" required autofocus></div>
       <div class="field"><label>密碼</label><input name="password" type="password" required></div>
       <button type="submit" class="btn-p" style="width:100%;">登入</button>
     </form>
+    <div style="text-align:center;margin-top:1.6rem;">
+      <a href="/register" style="font-family:Cormorant Garamond,serif;color:var(--dim);font-style:italic;text-decoration:none;font-size:.95rem;">還沒有帳號？註冊 →</a>
+    </div>
+    {% endif %}
     <div style="text-align:center;margin-top:1.6rem;">
       <a href="/" style="font-family:Cormorant Garamond,serif;color:var(--dim);font-style:italic;text-decoration:none;font-size:.95rem;">&#8592; 回首頁</a>
     </div>
